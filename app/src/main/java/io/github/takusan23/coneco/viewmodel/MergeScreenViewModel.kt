@@ -1,0 +1,42 @@
+package io.github.takusan23.coneco.viewmodel
+
+import android.app.Application
+import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.takusan23.coneco.data.SelectVideoItemData
+import io.github.takusan23.coneco.tool.FileTool
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+/** 結合する作業一連 で利用するViewModel */
+class MergeScreenViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val context = application.applicationContext
+    private val _selectedVideoList = MutableStateFlow<List<SelectVideoItemData>>(emptyList())
+
+    /** 選択した動画をFlowで返す */
+    val selectedVideoList = _selectedVideoList as StateFlow<List<SelectVideoItemData>>
+
+    /**
+     * 動画選択から戻ってきた際に、動画を追加する
+     *
+     * @param videoList 動画Uriの配列
+     * */
+    fun selectVideo(videoList: List<Uri>) {
+        viewModelScope.launch {
+            _selectedVideoList.value += videoList.map { FileTool.getVideoData(context, it) }
+        }
+    }
+
+    /**
+     * 指定した[Uri]の動画を削除する
+     *
+     * @param uri 削除する
+     * */
+    fun deleteVideo(uri: Uri) {
+        _selectedVideoList.value = _selectedVideoList.value.filter { it.uri != uri }
+    }
+
+}

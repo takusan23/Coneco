@@ -6,15 +6,15 @@ import androidx.compose.runtime.Composable
 import io.github.takusan23.coneco.ui.theme.ConecoTheme
 import io.github.takusan23.coneco.ui.tool.SetNavigationBarColor
 import io.github.takusan23.coneco.ui.tool.SetStatusBarColor
-import io.github.takusan23.coneco.viewmodel.HomeScreenViewModel
+import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 
 /**
  * 全ての親になる、原点となる部品
  *
- * @param homeScreenViewModel ViewModel
+ * @param mergeScreenViewModel ViewModel
  * */
 @Composable
-fun MainScreen(homeScreenViewModel: HomeScreenViewModel) {
+fun MainScreen(mergeScreenViewModel: MergeScreenViewModel) {
     ConecoTheme {
 
         // システムバーの色
@@ -23,7 +23,7 @@ fun MainScreen(homeScreenViewModel: HomeScreenViewModel) {
 
         // メイン画面
         Surface(color = MaterialTheme.colorScheme.surface) {
-            HomeScreen(homeScreenViewModel)
+            MergeScreen(mergeScreenViewModel)
         }
     }
 }

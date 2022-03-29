@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">こねこ</string>
+    <string name="screen_title_video_select">結合する動画を選ぶ</string>
+    <string name="screen_title_video_edit">動画情報の編集</string>
+    <string name="screen_title_video_merge">結合画面</string>
 </resources>

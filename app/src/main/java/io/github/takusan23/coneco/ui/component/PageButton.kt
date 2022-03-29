@@ -27,8 +27,8 @@ import io.github.takusan23.coneco.R
 fun PageButton(
     isEnableNext: Boolean = true,
     isEnablePrev: Boolean = true,
-    onNext: () -> Unit,
-    onPrev: () -> Unit,
+    onNext: () -> Unit = { },
+    onPrev: () -> Unit = { },
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (isEnablePrev) {

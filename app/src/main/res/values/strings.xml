@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Coneco</string>
+    <string name="screen_title_video_select">Select a video to combine</string>
+    <string name="screen_title_video_edit">Editing video information</string>
+    <string name="screen_title_video_merge">Combined screen</string>
 </resources>

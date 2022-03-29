@@ -1,5 +1,6 @@
 package io.github.takusan23.coneco.ui.component
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,10 +17,15 @@ import io.github.takusan23.coneco.R
  * アプリのタイトルバー
  *
  * @param onOpenBrowserClick ブラウザ起動ボタン押したら
+ * @param title タイトル
+ * @param indicatorCount ステップ数
+ * @param indicatorProgress 現在のステップ
  * */
 @Composable
 fun ConecoAppBar(
     title: String = stringResource(id = R.string.app_name),
+    indicatorProgress: Int = 0,
+    indicatorCount: Int = 3,
     onOpenBrowserClick: () -> Unit = {},
 ) {
     Column {
@@ -36,8 +42,8 @@ fun ConecoAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp),
-            count = 3,
-            progress = 1
+            count = indicatorCount,
+            progress = indicatorProgress
         )
     }
 }
@@ -63,7 +69,13 @@ private fun TitleBarIndicator(
                     .height(5.dp)
                     .weight(1f)
                     .background(
-                        color = if (index < progress) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer,
+                        color = animateColorAsState(
+                            targetValue = if (index < progress) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.primaryContainer
+                            }
+                        ).value,
                         shape = RoundedCornerShape(5.dp)
                     )
             )

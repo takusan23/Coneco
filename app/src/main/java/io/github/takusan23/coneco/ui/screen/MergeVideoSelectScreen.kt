@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.ui.component.PageButton
 import io.github.takusan23.coneco.ui.component.SelectVideoList
@@ -21,10 +22,14 @@ import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
  * 結合する動画を選ぶ画面
  *
  * @param mergeScreenViewModel 共有するViewModel
+ * @param navController 画面遷移
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MergeVideoSelectScreen(mergeScreenViewModel: MergeScreenViewModel) {
+fun MergeVideoSelectScreen(
+    mergeScreenViewModel: MergeScreenViewModel,
+    navController: NavHostController,
+) {
     val selectedVideoList = mergeScreenViewModel.selectedVideoList.collectAsState()
 
     // 選んだ動画を受け取る
@@ -52,8 +57,8 @@ fun MergeVideoSelectScreen(mergeScreenViewModel: MergeScreenViewModel) {
             }
             // つぎボタン
             PageButton(
-                onNext = { },
-                onPrev = { }
+                isEnablePrev = false,
+                onNext = { navController.navigate(NavigationScreenData.VideoEditScreenData.screenName) },
             )
         }
     }

@@ -3,4 +3,7 @@
     <string name="screen_title_video_select">Select a video to combine</string>
     <string name="screen_title_video_edit">Editing video information</string>
     <string name="screen_title_video_merge">Combined screen</string>
+    <string name="merge_edit_screen_save_folder">Save destination settings</string>
+    <string name="merge_edit_screen_audio_conf">Audio settings</string>
+    <string name="merge_edit_screen_video_conf">Video settings</string>
 </resources>

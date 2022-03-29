@@ -4,4 +4,7 @@
     <string name="screen_title_video_select">結合する動画を選ぶ</string>
     <string name="screen_title_video_edit">動画情報の編集</string>
     <string name="screen_title_video_merge">結合画面</string>
+    <string name="merge_edit_screen_save_folder">保存先の設定</string>
+    <string name="merge_edit_screen_audio_conf">音声の設定</string>
+    <string name="merge_edit_screen_video_conf">映像の設定</string>
 </resources>

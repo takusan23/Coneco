@@ -46,7 +46,10 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
                     )
                 }
                 composable(NavigationScreenData.VideoMergeScreenData.screenName) {
-
+                    MergeTaskScreen(
+                        mergeScreenViewModel = mergeScreenViewModel,
+                        navController = navController
+                    )
                 }
             }
         }

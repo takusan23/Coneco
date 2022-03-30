@@ -49,9 +49,10 @@ fun NumberOnlyOutlinedTextField(
 fun NullableNumberOnlyOutlinedTextField(
     modifier: Modifier = Modifier,
     label: @Composable () -> Unit,
+    initialNum: Int? = null,
     onNumberChange: (Int?) -> Unit,
 ) {
-    val numberText = remember { mutableStateOf("") }
+    val numberText = remember { mutableStateOf(initialNum?.toString() ?: "") }
     OutlinedTextField(
         modifier = modifier,
         value = numberText.value,

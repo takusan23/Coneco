@@ -4,6 +4,7 @@ val composeVersion: String by rootProject.extra
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 android {
@@ -49,7 +50,10 @@ dependencies {
     // conecocore 読み込み
     implementation(project(":conecocore"))
 
-    // コルーチン
+    // kotlinx serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+
+    // kotlinx coroutines
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
@@ -70,6 +74,9 @@ dependencies {
     // Compose + Material You
     implementation("androidx.compose.material3:material3:1.0.0-alpha08")
 
+    // WorkManager
+    val workVersion = "2.7.1"
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")

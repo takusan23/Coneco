@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import io.github.takusan23.coneco.R
-import io.github.takusan23.coneco.ui.component.PageButton
 import io.github.takusan23.coneco.ui.component.SelectVideoList
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 
@@ -56,10 +55,14 @@ fun MergeVideoSelectScreen(
                 )
             }
             // つぎボタン
-            PageButton(
-                isEnablePrev = false,
-                onNext = { navController.navigate(NavigationScreenData.VideoEditScreenData.screenName) },
-            )
+            Button(
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+                onClick = { navController.navigate(NavigationScreenData.VideoEditScreenData.screenName) }
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_outline_navigate_next_24), contentDescription = null)
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "動画の情報設定")
+            }
         }
     }
 }

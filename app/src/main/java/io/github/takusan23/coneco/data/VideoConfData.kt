@@ -1,5 +1,7 @@
 package io.github.takusan23.coneco.data
 
+import kotlinx.serialization.Serializable
+
 /**
  * 結合する際の映像の設定をまとめたデータクラス
  *
@@ -9,7 +11,8 @@ package io.github.takusan23.coneco.data
  * @param videoHeight 動画の高さを変えたい場合
  * @param videoWidth 動画の幅を変えたい場合
  * */
-data class VideoMergeEditData(
+@Serializable
+data class VideoConfData(
     val bitRate: Int = 1_000_000,
     val frameRate: Int = 30,
     val videoWidth: Int? = null,

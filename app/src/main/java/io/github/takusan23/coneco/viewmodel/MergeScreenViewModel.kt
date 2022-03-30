@@ -4,10 +4,16 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.takusan23.coneco.data.AudioMergeEditData
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import androidx.work.workDataOf
+import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.SelectVideoItemData
-import io.github.takusan23.coneco.data.VideoMergeEditData
-import io.github.takusan23.coneco.tool.FileTool
+import io.github.takusan23.coneco.data.VideoConfData
+import io.github.takusan23.coneco.tool.GetVideoData
+import io.github.takusan23.coneco.tool.SerializationTool
+import io.github.takusan23.coneco.workmanager.VideoMergeWork
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,18 +23,18 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
 
     private val context = application.applicationContext
     private val _selectedVideoList = MutableStateFlow<List<SelectVideoItemData>>(emptyList())
-    private val _audioMergeEditData = MutableStateFlow(AudioMergeEditData())
-    private val _videoMergeEditData = MutableStateFlow(VideoMergeEditData())
+    private val _audioMergeEditData = MutableStateFlow(AudioConfData())
+    private val _videoMergeEditData = MutableStateFlow(VideoConfData())
     private val _resultFileUri = MutableStateFlow<Uri?>(null)
 
     /** 選択した動画をFlowで返す */
     val selectedVideoList = _selectedVideoList as StateFlow<List<SelectVideoItemData>>
 
     /** 音声の設定 */
-    val audioMergeEditData = _audioMergeEditData as StateFlow<AudioMergeEditData>
+    val audioMergeEditData = _audioMergeEditData as StateFlow<AudioConfData>
 
     /** 映像の設定 */
-    val videoMergeEditData = _videoMergeEditData as StateFlow<VideoMergeEditData>
+    val videoMergeEditData = _videoMergeEditData as StateFlow<VideoConfData>
 
     /** 保存先Uri */
     val resultFileUri = _resultFileUri as StateFlow<Uri?>
@@ -40,7 +46,7 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
      * */
     fun selectVideo(videoList: List<Uri>) {
         viewModelScope.launch {
-            _selectedVideoList.value += videoList.map { FileTool.getVideoData(context, it) }
+            _selectedVideoList.value += videoList.map { GetVideoData.getVideoData(context, it) }
         }
     }
 
@@ -54,21 +60,21 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     /**
-     * [AudioMergeEditData]をセットする
+     * [AudioConfData]をセットする
      *
-     * @param audioMergeEditData [AudioMergeEditData]
+     * @param audioConfData [AudioConfData]
      * */
-    fun updateAudioMergeEditData(audioMergeEditData: AudioMergeEditData) {
-        _audioMergeEditData.value = audioMergeEditData
+    fun updateAudioMergeEditData(audioConfData: AudioConfData) {
+        _audioMergeEditData.value = audioConfData
     }
 
     /**
-     * [VideoMergeEditData]をセットする
+     * [VideoConfData]をセットする
      *
-     * @param videoMergeEditData [VideoMergeEditData]
+     * @param videoConfData [VideoConfData]
      * */
-    fun updateVideoMergeEditData(videoMergeEditData: VideoMergeEditData) {
-        _videoMergeEditData.value = videoMergeEditData
+    fun updateVideoMergeEditData(videoConfData: VideoConfData) {
+        _videoMergeEditData.value = videoConfData
     }
 
     /**
@@ -78,6 +84,27 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
      * */
     fun setResultUri(uri: Uri) {
         _resultFileUri.value = uri
+    }
+
+    /**
+     * 動画の結合を始める。進捗がほしいのでWorkManagerを利用した。
+     * */
+    fun startMerge() {
+        val videoMergeWork = OneTimeWorkRequestBuilder<VideoMergeWork>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .addTag(VideoMergeWork.WORKER_TAG)
+            .setInputData(workDataOf(
+                // 保存先
+                VideoMergeWork.RESULT_FILE_KEY to resultFileUri.value?.toString(),
+                // 結合する動画のURI配列
+                VideoMergeWork.MERGE_URI_LIST_KEY to selectedVideoList.value.map { it.uri.toString() }.toTypedArray(),
+                // 音声設定
+                VideoMergeWork.AUDIO_CONF_DATA_KEY to SerializationTool.convertString(audioMergeEditData.value),
+                // 映像設定
+                VideoMergeWork.VIDEO_CONF_DATA_KEY to SerializationTool.convertString(videoMergeEditData.value),
+            ))
+            .build()
+        WorkManager.getInstance(context).enqueue(videoMergeWork)
     }
 
 }

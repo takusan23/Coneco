@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.data.SelectVideoItemData
-import io.github.takusan23.coneco.tool.FileTool
+import io.github.takusan23.coneco.tool.GetVideoData
 
 /**
  * 選択した動画を一覧表示する
@@ -83,7 +83,7 @@ private fun SelectVideoListItem(
                     text = videoItemData.title,
                     style = TextStyle(fontWeight = FontWeight.Bold)
                 )
-                Text(text = "${FileTool.toMB(videoItemData.bytes)} MB")
+                Text(text = "${GetVideoData.toMB(videoItemData.bytes)} MB")
             }
             IconButton(onClick = { onDeleteClick(videoItemData.uri) }) {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_delete_24), contentDescription = null)

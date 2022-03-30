@@ -5,19 +5,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.navOptions
+import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.ui.component.MergeEditAudioConfig
 import io.github.takusan23.coneco.ui.component.MergeEditResultFilePicker
 import io.github.takusan23.coneco.ui.component.MergeEditVideoConfig
-import io.github.takusan23.coneco.ui.component.PageButton
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 
 /**
@@ -71,11 +72,23 @@ fun MergeEditScreen(
                     onDataChange = { mergeScreenViewModel.updateVideoMergeEditData(it) }
                 )
             }
-            // 次ボタン
-            PageButton(
-                onNext = { navController.navigate(NavigationScreenData.VideoMergeScreenData.screenName) },
-                onPrev = { navController.popBackStack() }
-            )
+            // 結合する
+            Button(
+                modifier = Modifier.align(alignment = CenterHorizontally),
+                onClick = {
+                    // 画面切り替え
+                    navController.navigate(NavigationScreenData.VideoMergeScreenData.screenName, navOptions {
+                        // 最初の動画選択まで戻す
+                        popUpTo(NavigationScreenData.VideoSelectScreenData.screenName)
+                    })
+                    // 結合開始
+                    mergeScreenViewModel.startMerge()
+                }
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_outline_navigate_next_24), contentDescription = null)
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = "動画を繋げる")
+            }
         }
     }
 

@@ -14,8 +14,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.coneco.R
-import io.github.takusan23.coneco.data.AudioMergeEditData
-import io.github.takusan23.coneco.data.VideoMergeEditData
+import io.github.takusan23.coneco.data.AudioConfData
+import io.github.takusan23.coneco.data.VideoConfData
 
 /**
  * ファイルの保存先を選ぶやつ
@@ -65,8 +65,8 @@ fun MergeEditResultFilePicker(onFilePickerOpen: () -> Unit, uriPath: String) {
  */
 @Composable
 fun MergeEditAudioConfig(
-    data: AudioMergeEditData,
-    onDataChange: (AudioMergeEditData) -> Unit,
+    data: AudioConfData,
+    onDataChange: (AudioConfData) -> Unit,
 ) {
     val isOpen = remember { mutableStateOf(false) }
 
@@ -96,8 +96,8 @@ fun MergeEditAudioConfig(
  * */
 @Composable
 fun MergeEditVideoConfig(
-    data: VideoMergeEditData,
-    onDataChange: (VideoMergeEditData) -> Unit,
+    data: VideoConfData,
+    onDataChange: (VideoConfData) -> Unit,
 ) {
     val isOpen = remember { mutableStateOf(false) }
 
@@ -131,6 +131,7 @@ fun MergeEditVideoConfig(
                         .padding(5.dp)
                         .weight(1f)
                         .fillMaxWidth(),
+                    initialNum = data.videoHeight,
                     label = { Text(text = "縦のサイズ (空白可)") },
                     onNumberChange = { onDataChange(data.copy(videoHeight = it)) }
                 )
@@ -139,6 +140,7 @@ fun MergeEditVideoConfig(
                         .padding(5.dp)
                         .weight(1f)
                         .fillMaxWidth(),
+                    initialNum = data.videoWidth,
                     label = { Text(text = "横のサイズ (空白可)") },
                     onNumberChange = { onDataChange(data.copy(videoWidth = it)) }
                 )

@@ -78,6 +78,8 @@ class ConecoCore(
     suspend fun merge() {
         videoDataMerge?.merge()
         audioDataMerge?.merge()
+        // 合わせる
+
     }
 
     /**

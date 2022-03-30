@@ -8,7 +8,7 @@ import io.github.takusan23.coneco.data.SelectVideoItemData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-object FileTool {
+object GetVideoData {
 
     /**
      * [Uri]から[SelectVideoItemData]を作る

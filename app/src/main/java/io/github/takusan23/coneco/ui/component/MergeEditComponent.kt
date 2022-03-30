@@ -2,7 +2,6 @@ package io.github.takusan23.coneco.ui.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.coneco.R
@@ -71,15 +69,6 @@ fun MergeEditAudioConfig(
     onDataChange: (AudioMergeEditData) -> Unit,
 ) {
     val isOpen = remember { mutableStateOf(false) }
-    // キロビットに変換するため data.bitRate / 1000
-    val bitRateText = remember { mutableStateOf((data.bitRate / 1000).toString()) }
-
-    /** [onDataChange]へ通知する */
-    fun notify() {
-        onDataChange(data.copy(
-            bitRate = (bitRateText.value.toIntOrNull() ?: 0) * 1000,
-        ))
-    }
 
     MergeEditCommon(
         isOpen = isOpen.value,
@@ -87,17 +76,14 @@ fun MergeEditAudioConfig(
         labelRes = R.string.merge_edit_screen_audio_conf,
         onOpenClick = { isOpen.value = !isOpen.value }
     ) {
-        OutlinedTextField(
+
+        NumberOnlyOutlinedTextField(
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth(),
-            value = bitRateText.value,
+            initialNum = (data.bitRate / 1000),
             label = { Text(text = "音声のビットレート (単位 : K)") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            onValueChange = {
-                bitRateText.value = it
-                notify()
-            }
+            onNumberChange = { onDataChange(data.copy(bitRate = it * 1000)) }
         )
     }
 }
@@ -114,21 +100,6 @@ fun MergeEditVideoConfig(
     onDataChange: (VideoMergeEditData) -> Unit,
 ) {
     val isOpen = remember { mutableStateOf(false) }
-    // キロビットに変換するため data.bitRate / 1000
-    val bitRateText = remember { mutableStateOf((data.bitRate / 1000).toString()) }
-    val frameRateText = remember { mutableStateOf(data.frameRate.toString()) }
-    val videoWidth = remember { mutableStateOf((data.videoWidth ?: "").toString()) }
-    val videoHeight = remember { mutableStateOf((data.videoHeight ?: "").toString()) }
-
-    /** [onDataChange]へ通知する */
-    fun notify() {
-        onDataChange(data.copy(
-            bitRate = (bitRateText.value.toIntOrNull() ?: 0) * 1000,
-            frameRate = frameRateText.value.toIntOrNull() ?: 30,
-            videoWidth = videoWidth.value.toIntOrNull(),
-            videoHeight = videoHeight.value.toIntOrNull(),
-        ))
-    }
 
     MergeEditCommon(
         isOpen = isOpen.value,
@@ -137,57 +108,39 @@ fun MergeEditVideoConfig(
         onOpenClick = { isOpen.value = !isOpen.value }
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
-            OutlinedTextField(
+            NumberOnlyOutlinedTextField(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth(),
-                value = bitRateText.value,
                 label = { Text(text = "映像のビットレート (単位 : K)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                onValueChange = {
-                    bitRateText.value = it
-                    notify()
-                }
+                initialNum = (data.bitRate / 1000),
+                onNumberChange = { onDataChange(data.copy(bitRate = it * 1000)) }
             )
-            OutlinedTextField(
+            NumberOnlyOutlinedTextField(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth(),
-                value = frameRateText.value,
                 label = { Text(text = "フレームレート (fps)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                onValueChange = {
-                    frameRateText.value = it
-                    notify()
-                }
+                initialNum = data.frameRate,
+                onNumberChange = { onDataChange(data.copy(frameRate = it)) }
             )
             // 縦、横
             Row {
-                OutlinedTextField(
+                NullableNumberOnlyOutlinedTextField(
                     modifier = Modifier
                         .padding(5.dp)
                         .weight(1f)
                         .fillMaxWidth(),
-                    value = videoHeight.value,
-                    label = { Text(text = "縦のサイズ") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    onValueChange = {
-                        videoHeight.value = it
-                        notify()
-                    }
+                    label = { Text(text = "縦のサイズ (空白可)") },
+                    onNumberChange = { onDataChange(data.copy(videoHeight = it)) }
                 )
-                OutlinedTextField(
+                NullableNumberOnlyOutlinedTextField(
                     modifier = Modifier
                         .padding(5.dp)
                         .weight(1f)
                         .fillMaxWidth(),
-                    value = videoWidth.value,
-                    label = { Text(text = "横のサイズ") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    onValueChange = {
-                        videoWidth.value = it
-                        notify()
-                    }
+                    label = { Text(text = "横のサイズ (空白可)") },
+                    onNumberChange = { onDataChange(data.copy(videoWidth = it)) }
                 )
             }
             // OpenGLモードを使う。他の動画とサイズが違う場合は利用する必要あり

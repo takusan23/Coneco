@@ -1,5 +1,7 @@
 package io.github.takusan23.coneco.ui.screen
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +34,12 @@ fun MergeEditScreen(
 ) {
     val audioMergeEditData = mergeScreenViewModel.audioMergeEditData.collectAsState()
     val videoMergeEditData = mergeScreenViewModel.videoMergeEditData.collectAsState()
+    val resultFileUri = mergeScreenViewModel.resultFileUri.collectAsState()
+
+    // 保存先設定
+    val createResultFile = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument(), onResult = { uri ->
+        mergeScreenViewModel.setResultUri(uri)
+    })
 
     Scaffold {
         Column {
@@ -46,7 +54,10 @@ fun MergeEditScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 // 保存先選択
-                MergeEditResultFilePicker(onFilePickerOpen = { }, uriPath = "demo")
+                MergeEditResultFilePicker(
+                    onFilePickerOpen = { createResultFile.launch("coneco_merge_${System.currentTimeMillis()}.mp4") },
+                    uriPath = resultFileUri.value?.path ?: ""
+                )
                 Spacer(modifier = Modifier.size(20.dp))
                 // 音声の設定
                 MergeEditAudioConfig(
@@ -62,7 +73,7 @@ fun MergeEditScreen(
             }
             // 次ボタン
             PageButton(
-                onNext = { navController.navigate(NavigationScreenData.VideoEditScreenData.screenName) },
+                onNext = { navController.navigate(NavigationScreenData.VideoMergeScreenData.screenName) },
                 onPrev = { navController.popBackStack() }
             )
         }

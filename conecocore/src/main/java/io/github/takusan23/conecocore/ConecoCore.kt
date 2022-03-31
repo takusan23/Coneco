@@ -4,6 +4,8 @@ import io.github.takusan23.conecocore.merge.AudioDataMerge
 import io.github.takusan23.conecocore.merge.VideoDataMerge
 import io.github.takusan23.conecocore.merge.VideoDataMergeAbstract
 import io.github.takusan23.conecocore.merge.VideoDataOpenGlMerge
+import io.github.takusan23.conecocore.tool.MergedDataMuxer
+import io.github.takusan23.conecocore.tool.TempFolderTool
 import java.io.File
 
 /**
@@ -27,6 +29,9 @@ class ConecoCore(
     /** 映像を合成する */
     private var videoDataMerge: VideoDataMergeAbstract? = null
 
+    /** 一時映像ファイル作成クラス */
+    private var tempFileFolderTool = TempFolderTool(tempFileFolder)
+
     /**
      * 音声の情報をセットする
      *
@@ -34,11 +39,10 @@ class ConecoCore(
      * */
     fun configureAudioFormat(bitRate: Int = 192_000) {
         // 一時保存先
-        val tempRawAudioFile = File(tempFileFolder, "temp_raw_audio_file")
         audioDataMerge = AudioDataMerge(
             videoList = videoList,
-            resultFile = resultFile,
-            tempRawDataFile = tempRawAudioFile,
+            resultFile = tempFileFolderTool.tempAudioFile,
+            tempRawDataFile = tempFileFolderTool.tempRawAudioFile,
             bitRate = bitRate
         )
     }
@@ -61,13 +65,14 @@ class ConecoCore(
         videoWidth: Int? = null,
         videoHeight: Int? = null,
     ) {
+        val tempVideoFile = tempFileFolderTool.tempVideoFile
         // 解像度の変更をする場合はOpenGLモードで
         videoDataMerge = when {
             isUseOpenGl || (videoHeight != null && videoWidth != null) -> {
-                VideoDataOpenGlMerge(videoList, resultFile, bitRate, frameRate, videoWidth, videoHeight)
+                VideoDataOpenGlMerge(videoList, tempVideoFile, bitRate, frameRate, videoWidth, videoHeight)
             }
             else -> {
-                VideoDataMerge(videoList, resultFile, bitRate, frameRate)
+                VideoDataMerge(videoList, tempVideoFile, bitRate, frameRate)
             }
         }
     }
@@ -79,7 +84,8 @@ class ConecoCore(
         videoDataMerge?.merge()
         audioDataMerge?.merge()
         // 合わせる
-
+        MergedDataMuxer.mixed(resultFile, listOf(tempFileFolderTool.tempVideoFile, tempFileFolderTool.tempAudioFile))
+        tempFileFolderTool.delete()
     }
 
     /**

@@ -27,18 +27,17 @@ object MergedDataMuxer {
         val mediaMuxer = MediaMuxer(resultFile.path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
 
         // 音声、映像ファイルの トラック番号 と [MediaExtractor] の Pair
-        val trackIndexToExtractorPairList = mergeFileList
-            .map {
-                // MediaExtractorとフォーマット取得
-                val mediaExtractor = MediaExtractor().apply { setDataSource(it.path) }
-                val mediaFormat = mediaExtractor.getTrackFormat(0) // 音声には音声、映像には映像しか無いので 0
-                mediaExtractor.selectTrack(0)
-                mediaFormat to mediaExtractor
-            }.map { (format, extractor) ->
-                // フォーマットをMediaMuxerに渡して、トラックを追加してもらう
-                val videoTrackIndex = mediaMuxer.addTrack(format)
-                videoTrackIndex to extractor
-            }
+        val trackIndexToExtractorPairList = mergeFileList.map {
+            // MediaExtractorとフォーマット取得
+            val mediaExtractor = MediaExtractor().apply { setDataSource(it.path) }
+            val mediaFormat = mediaExtractor.getTrackFormat(0) // 音声には音声、映像には映像しか無いので 0
+            mediaExtractor.selectTrack(0)
+            mediaFormat to mediaExtractor
+        }.map { (format, extractor) ->
+            // フォーマットをMediaMuxerに渡して、トラックを追加してもらう
+            val videoTrackIndex = mediaMuxer.addTrack(format)
+            videoTrackIndex to extractor
+        }
         // MediaMuxerスタート
         mediaMuxer.start()
         // 映像と音声を一つの動画ファイルに書き込んでいく

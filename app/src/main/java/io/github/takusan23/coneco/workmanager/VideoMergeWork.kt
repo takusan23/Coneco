@@ -42,10 +42,6 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         val mergeUriList = inputData.getStringArray(MERGE_URI_LIST_KEY)?.map { it.toUri() }!!
         val audioConfData = inputData.getString(AUDIO_CONF_DATA_KEY)!!.let { SerializationTool.convertDataClass<AudioConfData>(it) }
         val videoConfData = inputData.getString(VIDEO_CONF_DATA_KEY)!!.let { SerializationTool.convertDataClass<VideoConfData>(it) }
-
-        println(audioConfData)
-        println(videoConfData)
-
         // Uriだと扱えないので内部固有ストレージへコピーする
         val externalCopedFileList = mergeUriList.mapIndexed { index, uri ->
             externalFileManager.copyFileFromUri(uri, index.toString())

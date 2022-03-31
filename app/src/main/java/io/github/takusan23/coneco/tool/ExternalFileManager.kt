@@ -54,12 +54,16 @@ class ExternalFileManager(private val context: Context) {
     suspend fun delete() = withContext(Dispatchers.IO) {
         mergeVideoFolder.deleteRecursively()
         tempResultFile.delete()
-        tempResultFile.delete()
     }
 
     companion object {
+        /** Storage Access FrameworkでもらったUriをコピーする先 */
         private const val MERGE_ITEM_FOLDER = "merge_videos"
+
+        /** 結合後のファイル */
         private const val TEMP_RESULT_FILE = "temp_result_file"
+
+        /** 一時保存先 */
         private const val TEMP_FILE_FOLDER = "temp_file_folder"
     }
 }

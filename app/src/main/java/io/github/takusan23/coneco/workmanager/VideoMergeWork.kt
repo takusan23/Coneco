@@ -8,12 +8,18 @@ import androidx.core.net.toUri
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.VideoConfData
 import io.github.takusan23.coneco.tool.ExternalFileManager
 import io.github.takusan23.coneco.tool.SerializationTool
 import io.github.takusan23.conecocore.ConecoCore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 
 /**
  * 動画を結合する仕事をWorkManagerにやらせる。
@@ -36,7 +42,7 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
     }
 
     /** 動画の結合を行う */
-    private suspend fun startMerge() {
+    private suspend fun startMerge() = withContext(Dispatchers.Default) {
         // 各データを取り出す
         val resultPath = inputData.getString(RESULT_FILE_KEY)?.toUri()!!
         val mergeUriList = inputData.getStringArray(MERGE_URI_LIST_KEY)?.map { it.toUri() }!!
@@ -52,14 +58,20 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
             configureVideoFormat(
                 videoConfData.bitRate,
                 videoConfData.frameRate,
+                videoConfData.isRequireOpenGl,
+                videoConfData.videoWidth,
+                videoConfData.videoHeight
             )
         }
+        // いまの進捗を大まかに取得できるようにした
+        conecoCore.status.onEach {
+            setProgress(workDataOf(WORK_STATUS_KEY to it.name))
+        }.launchIn(CoroutineScope(coroutineContext))
         // 結合開始
         conecoCore.merge()
         // あとしまつ
         externalFileManager.moveResultFileToUri(resultPath)
         externalFileManager.delete()
-        println("終了！！！！！！！！！！")
     }
 
     private fun createForegroundInfo(): ForegroundInfo {
@@ -98,6 +110,9 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
 
         /** 通知ID */
         const val NOTIFICATION_ID = 2525
+
+        /** 進行状態 */
+        const val WORK_STATUS_KEY = "io.github.takusan23.coneco.workmanager.VideoMergeWork.WORK_STATUS_KEY"
 
     }
 }

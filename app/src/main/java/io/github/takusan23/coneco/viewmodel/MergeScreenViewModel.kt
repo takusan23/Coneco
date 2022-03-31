@@ -3,11 +3,9 @@ package io.github.takusan23.coneco.viewmodel
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
-import androidx.work.WorkManager
-import androidx.work.workDataOf
+import androidx.work.*
 import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.SelectVideoItemData
 import io.github.takusan23.coneco.data.VideoConfData
@@ -17,6 +15,7 @@ import io.github.takusan23.coneco.workmanager.VideoMergeWork
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.*
 
 /** 結合する作業一連 で利用するViewModel */
 class MergeScreenViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,6 +25,7 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
     private val _audioMergeEditData = MutableStateFlow(AudioConfData())
     private val _videoMergeEditData = MutableStateFlow(VideoConfData())
     private val _resultFileUri = MutableStateFlow<Uri?>(null)
+    private var videoMergeRequestId: UUID? = null
 
     /** 選択した動画をFlowで返す */
     val selectedVideoList = _selectedVideoList as StateFlow<List<SelectVideoItemData>>
@@ -104,7 +104,15 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
                 VideoMergeWork.VIDEO_CONF_DATA_KEY to SerializationTool.convertString(videoMergeEditData.value),
             ))
             .build()
+        videoMergeRequestId = videoMergeWork.id
         WorkManager.getInstance(context).enqueue(videoMergeWork)
+    }
+
+    /** 進捗LiveDataを返す */
+    fun getVideoMergeWorkStatusLiveData(): LiveData<WorkInfo>? {
+        return if (videoMergeRequestId != null) {
+            WorkManager.getInstance(context).getWorkInfoByIdLiveData(videoMergeRequestId!!)
+        } else null
     }
 
 }

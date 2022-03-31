@@ -39,7 +39,9 @@ fun MergeEditScreen(
 
     // 保存先設定
     val createResultFile = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument(), onResult = { uri ->
-        mergeScreenViewModel.setResultUri(uri)
+        if (uri != null) {
+            mergeScreenViewModel.setResultUri(uri)
+        }
     })
 
     Scaffold {

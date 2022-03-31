@@ -6,6 +6,9 @@ import io.github.takusan23.conecocore.merge.VideoDataMergeAbstract
 import io.github.takusan23.conecocore.merge.VideoDataOpenGlMerge
 import io.github.takusan23.conecocore.tool.MergedDataMuxer
 import io.github.takusan23.conecocore.tool.TempFolderTool
+import io.github.takusan23.conecocore.tool.VideoMergeStatus
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 
 /**
@@ -22,6 +25,7 @@ class ConecoCore(
     private val resultFile: File,
     private val tempFileFolder: File,
 ) {
+    private val _status = MutableStateFlow(VideoMergeStatus.NO_TASK)
 
     /** 音声を合成する */
     private var audioDataMerge: AudioDataMerge? = null
@@ -30,7 +34,10 @@ class ConecoCore(
     private var videoDataMerge: VideoDataMergeAbstract? = null
 
     /** 一時映像ファイル作成クラス */
-    private var tempFileFolderTool = TempFolderTool(tempFileFolder)
+    private val tempFileFolderTool = TempFolderTool(tempFileFolder)
+
+    /** 進捗状態 */
+    val status = _status as StateFlow<VideoMergeStatus>
 
     /**
      * 音声の情報をセットする
@@ -81,10 +88,15 @@ class ConecoCore(
      * 結合を開始する
      * */
     suspend fun merge() {
+        _status.tryEmit(VideoMergeStatus.VIDEO_MERGE)
         videoDataMerge?.merge()
+        _status.value = VideoMergeStatus.AUDIO_MERGE
         audioDataMerge?.merge()
         // 合わせる
+        _status.value = VideoMergeStatus.CONCAT
         MergedDataMuxer.mixed(resultFile, listOf(tempFileFolderTool.tempVideoFile, tempFileFolderTool.tempAudioFile))
+        // 終了
+        _status.value = VideoMergeStatus.FINISH
         tempFileFolderTool.delete()
     }
 

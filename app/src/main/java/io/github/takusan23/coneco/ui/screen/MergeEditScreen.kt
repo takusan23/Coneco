@@ -1,7 +1,5 @@
 package io.github.takusan23.coneco.ui.screen
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,7 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.ui.component.MergeEditAudioConfig
-import io.github.takusan23.coneco.ui.component.MergeEditResultFilePicker
+import io.github.takusan23.coneco.ui.component.MergeEditResultFileName
 import io.github.takusan23.coneco.ui.component.MergeEditVideoConfig
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 
@@ -35,14 +33,7 @@ fun MergeEditScreen(
 ) {
     val audioMergeEditData = mergeScreenViewModel.audioMergeEditData.collectAsState()
     val videoMergeEditData = mergeScreenViewModel.videoMergeEditData.collectAsState()
-    val resultFileUri = mergeScreenViewModel.resultFileUri.collectAsState()
-
-    // 保存先設定
-    val createResultFile = rememberLauncherForActivityResult(contract = ActivityResultContracts.CreateDocument(), onResult = { uri ->
-        if (uri != null) {
-            mergeScreenViewModel.setResultUri(uri)
-        }
-    })
+    val fileName = mergeScreenViewModel.resultFileName.collectAsState()
 
     Scaffold {
         Column {
@@ -56,10 +47,10 @@ fun MergeEditScreen(
                     .padding(5.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                // 保存先選択
-                MergeEditResultFilePicker(
-                    onFilePickerOpen = { createResultFile.launch("coneco_merge_${System.currentTimeMillis()}.mp4") },
-                    uriPath = resultFileUri.value?.path ?: ""
+                // 結合後のファイルの名前
+                MergeEditResultFileName(
+                    fileName = fileName.value,
+                    onFileNameChange = { mergeScreenViewModel.setResultFileName(it) }
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 // 音声の設定

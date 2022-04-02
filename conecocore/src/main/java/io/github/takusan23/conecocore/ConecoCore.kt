@@ -88,7 +88,7 @@ class ConecoCore(
      * 結合を開始する
      * */
     suspend fun merge() {
-        _status.tryEmit(VideoMergeStatus.VIDEO_MERGE)
+        _status.value = VideoMergeStatus.VIDEO_MERGE
         videoDataMerge?.merge()
         _status.value = VideoMergeStatus.AUDIO_MERGE
         audioDataMerge?.merge()

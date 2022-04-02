@@ -3,16 +3,20 @@ package io.github.takusan23.coneco.ui.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.work.WorkInfo
+import io.github.takusan23.coneco.R
+import io.github.takusan23.coneco.tool.WorkManagerTool
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
-import io.github.takusan23.coneco.workmanager.VideoMergeWork
 import io.github.takusan23.conecocore.tool.VideoMergeStatus
 
 /**
@@ -24,8 +28,8 @@ fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: N
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     // WorkManagerのステータスをLiveDataで受け取る
-    val workStatus = mergeScreenViewModel.getVideoMergeWorkStatusLiveData()?.observeAsState()
-    val videoMergeStatus = workStatus?.value?.progress?.getString(VideoMergeWork.WORK_STATUS_KEY)?.let { VideoMergeStatus.findFromName(it) }
+    val workStatus = remember { WorkManagerTool.collectMergeState(context, lifecycleOwner) }.collectAsState()
+    val workInfo = remember { WorkManagerTool.existsRunningTask(context, lifecycleOwner) }.collectAsState()
 
     Scaffold {
         Column {
@@ -38,25 +42,29 @@ fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: N
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (videoMergeStatus != null && videoMergeStatus != VideoMergeStatus.FINISH) {
+                if (workInfo.value?.state == WorkInfo.State.RUNNING) {
                     CircularProgressIndicator(
                         modifier = Modifier.padding(5.dp)
                     )
-                    LinearProgressIndicator(
+                    MergeProgressIndicator(
                         modifier = Modifier
                             .padding(5.dp)
                             .width(50.dp),
-                        progress = when (videoMergeStatus) {
-                            VideoMergeStatus.VIDEO_MERGE -> 1f
-                            VideoMergeStatus.AUDIO_MERGE -> 2f
-                            VideoMergeStatus.CONCAT -> 3f
-                            else -> 1f // それ以外は
-                        } / VideoMergeStep,
+                        status = workStatus.value
                     )
                     Text(
                         modifier = Modifier.padding(5.dp),
-                        text = videoMergeStatus.name
+                        text = workStatus.value.name
                     )
+                    // 終了ボタン
+                    Button(
+                        modifier = Modifier.padding(top = 10.dp),
+                        onClick = { WorkManagerTool.cancel(context) }
+                    ) {
+                        Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = null)
+                        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                        Text(text = "強制終了")
+                    }
                 } else {
                     Text(text = "終了です")
                 }
@@ -67,6 +75,22 @@ fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: N
 
 /** 映像の合成、音声の合成、コンテナへ格納 の3ステップ */
 private const val VideoMergeStep = 3
+
+/**
+ * [VideoMergeStatus]の進捗を表示するインジケーター
+ *
+ * @param status [VideoMergeStatus]
+ * */
+@Composable
+private fun MergeProgressIndicator(
+    modifier: Modifier = Modifier,
+    status: VideoMergeStatus = VideoMergeStatus.NO_TASK,
+) {
+    LinearProgressIndicator(
+        modifier = modifier,
+        progress = VideoMergeStatus.progress(status),
+    )
+}
 
 /**
  * ヘッダー部

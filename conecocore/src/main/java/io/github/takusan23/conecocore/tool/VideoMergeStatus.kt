@@ -22,8 +22,20 @@ enum class VideoMergeStatus {
         /** 名前から [VideoMergeStatus] を返す */
         fun findFromName(name: String) = valueOf(name)
 
-        /** 合計数 */
-        val length get() = values().size
+        /**
+         * 進捗に出すタスク数
+         *
+         * VIDEO_MERGE AUDIO_MERGE CONCAT の3つ
+         * */
+        const val TASK_COUNT = 3
+
+        /** 進捗をFloatで返す */
+        fun progress(status: VideoMergeStatus) = when (status) {
+            VIDEO_MERGE -> 1f
+            AUDIO_MERGE -> 2f
+            CONCAT -> 3f
+            else -> 1f // それ以外は
+        } / TASK_COUNT
     }
 
 }

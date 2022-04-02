@@ -4,10 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -16,16 +19,25 @@ import androidx.compose.ui.unit.sp
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.VideoConfData
+import io.github.takusan23.coneco.tool.ExternalFileManager
 
 /**
- * ファイルの保存先を選ぶやつ
+ * 結合後のファイル名を決めるやつ。面倒いので速攻TextFieldへフォーカスを当ててます。
  *
- * @param onFilePickerOpen Storage Access Frameworkでファイルを作成してください
- * @param uriPath 保存先パス
+ * @param fileName ファイル名
+ * @param onFileNameChange ファイル名が変わったら呼ばれる
  * */
 @Composable
-fun MergeEditResultFilePicker(onFilePickerOpen: () -> Unit, uriPath: String) {
+fun MergeEditResultFileName(
+    fileName: String,
+    onFileNameChange: (String) -> Unit,
+) {
     val isOpen = remember { mutableStateOf(true) }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(key1 = Unit, block = {
+        focusRequester.requestFocus()
+    })
 
     MergeEditCommon(
         isOpen = isOpen.value,
@@ -37,21 +49,26 @@ fun MergeEditResultFilePicker(onFilePickerOpen: () -> Unit, uriPath: String) {
             OutlinedTextField(
                 modifier = Modifier
                     .padding(5.dp)
+                    .focusRequester(focusRequester)
                     .fillMaxWidth(),
-                value = uriPath,
-                label = { Text(text = "繋げた動画の保存先") },
-                readOnly = true,
-                onValueChange = {}
+                value = fileName,
+                label = { Text(text = "繋げた動画のファイル名") },
+                onValueChange = { onFileNameChange(it) }
             )
-            Button(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .align(alignment = Alignment.End),
-                onClick = onFilePickerOpen
-            ) {
-                Icon(painter = painterResource(id = R.drawable.ic_outline_drive_folder_upload_24), contentDescription = null)
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "保存先の選択")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier
+                        .padding(5.dp),
+                    painter = painterResource(R.drawable.ic_outline_drive_folder_upload_24),
+                    contentDescription = null
+                )
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = """
+                    保存先は以下になります：
+                    ${ExternalFileManager.resultMovieSaveFolder}
+                    """.trimIndent()
+                )
             }
         }
     }
@@ -132,7 +149,7 @@ fun MergeEditVideoConfig(
                         .weight(1f)
                         .fillMaxWidth(),
                     initialNum = data.videoHeight,
-                    label = { Text(text = "縦のサイズ (空白可)") },
+                    label = { Text(text = "縦のサイズ (空白でも可)") },
                     onNumberChange = { onDataChange(data.copy(videoHeight = it)) }
                 )
                 NullableNumberOnlyOutlinedTextField(
@@ -141,7 +158,7 @@ fun MergeEditVideoConfig(
                         .weight(1f)
                         .fillMaxWidth(),
                     initialNum = data.videoWidth,
-                    label = { Text(text = "横のサイズ (空白可)") },
+                    label = { Text(text = "横のサイズ (空白でも可)") },
                     onNumberChange = { onDataChange(data.copy(videoWidth = it)) }
                 )
             }

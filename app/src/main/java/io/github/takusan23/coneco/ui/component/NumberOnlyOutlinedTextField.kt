@@ -28,6 +28,8 @@ fun NumberOnlyOutlinedTextField(
         modifier = modifier,
         value = numberText.value,
         label = label,
+        maxLines = 1,
+        singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         onValueChange = {
             numberText.value = it

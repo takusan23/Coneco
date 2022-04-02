@@ -2,6 +2,10 @@ package io.github.takusan23.coneco.tool
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.core.content.contentValuesOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -11,6 +15,7 @@ import java.io.File
  *
  * @param context [Context]
  * */
+@Suppress("BlockingMethodInNonBlockingContext")
 class ExternalFileManager(private val context: Context) {
 
     /** 結合する動画の保存先 */
@@ -38,23 +43,36 @@ class ExternalFileManager(private val context: Context) {
         }
     }
 
-    /**
-     * 結合したファイルをUriへ書き込む
-     *
-     * @param uri 移動先
-     * */
-    suspend fun moveResultFileToUri(uri: Uri) = withContext(Dispatchers.IO) {
-        val contentResolver = context.contentResolver
-        val outputStream = contentResolver.openOutputStream(uri)!!
-        outputStream.write(tempResultFile.readBytes())
-        tempResultFile.delete()
-    }
-
     /** フォルダ、ファイルを全部消す */
     suspend fun delete() = withContext(Dispatchers.IO) {
         mergeVideoFolder.deleteRecursively()
         tempResultFile.delete()
     }
+
+    /**
+     * 結合したファイルを端末のギャラリー（Movie）に入れる。
+     *
+     * くそみたいな MediaStore API を叩く必要がある。
+     *
+     * @param fileName ファイル名
+     * */
+    suspend fun createFileAndMoveVideoFile(fileName: String) = withContext(Dispatchers.IO) {
+        val contentResolver = context.contentResolver
+        // MediaStoreに入れる中身
+        val contentValues = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            contentValuesOf(
+                MediaStore.MediaColumns.DISPLAY_NAME to fileName,
+                MediaStore.MediaColumns.RELATIVE_PATH to resultMovieSaveFolder
+            )
+        } else {
+            contentValuesOf(MediaStore.MediaColumns.DISPLAY_NAME to fileName)
+        }
+        val uri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)!!
+        val outputStream = contentResolver.openOutputStream(uri)!!
+        outputStream.write(tempResultFile.readBytes())
+        tempResultFile.delete()
+    }
+
 
     companion object {
         /** Storage Access FrameworkでもらったUriをコピーする先 */
@@ -65,5 +83,18 @@ class ExternalFileManager(private val context: Context) {
 
         /** 一時保存先 */
         private const val TEMP_FILE_FOLDER = "temp_file_folder"
+
+        /**
+         * 保存先パスを返す
+         *
+         * 注意：これはユーザーに提示するためだけに利用されるパス、JavaのFileAPIでは利用できない
+         * */
+        val resultMovieSaveFolder: String
+            get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // MediaStore.MediaColumns.RELATIVE_PATH が Android10 以降のみ
+                "${Environment.DIRECTORY_MOVIES}/Coneco"
+            } else {
+                Environment.DIRECTORY_MOVIES
+            }
     }
 }

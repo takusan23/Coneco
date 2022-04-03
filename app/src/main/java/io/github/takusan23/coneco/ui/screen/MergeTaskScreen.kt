@@ -17,7 +17,7 @@ import androidx.work.WorkInfo
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.tool.WorkManagerTool
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
-import io.github.takusan23.conecocore.tool.VideoMergeStatus
+import io.github.takusan23.conecocore.data.VideoMergeStatus
 
 /**
  * マージ中画面

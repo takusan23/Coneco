@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import io.github.takusan23.coneco.workmanager.VideoMergeWork
-import io.github.takusan23.conecocore.tool.VideoMergeStatus
+import io.github.takusan23.conecocore.data.VideoMergeStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

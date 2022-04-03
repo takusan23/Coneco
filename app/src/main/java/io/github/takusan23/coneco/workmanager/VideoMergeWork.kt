@@ -10,13 +10,14 @@ import io.github.takusan23.coneco.MainActivity
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.VideoConfData
-import io.github.takusan23.coneco.tool.ExternalFileManager
 import io.github.takusan23.coneco.tool.SerializationTool
 import io.github.takusan23.conecocore.ConecoCore
-import io.github.takusan23.conecocore.tool.VideoMergeStatus
+import io.github.takusan23.conecocore.data.ConecoRequestUriData
+import io.github.takusan23.conecocore.data.VideoMergeStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.io.File
 
 /**
  * 動画を結合する仕事をWorkManagerにやらせる。
@@ -32,9 +33,6 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
 
     /** 動画を繋げるライブラリ */
     private var conecoCore: ConecoCore? = null
-
-    /** 内部ストレージを扱いやすくするクラス */
-    private val externalFileManager = ExternalFileManager(appContext)
 
     override suspend fun doWork(): Result {
         withContext(Dispatchers.Default) {
@@ -59,12 +57,17 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         val mergeUriList = inputData.getStringArray(MERGE_URI_LIST_KEY)?.map { it.toUri() }!!
         val audioConfData = inputData.getString(AUDIO_CONF_DATA_KEY)!!.let { SerializationTool.convertDataClass<AudioConfData>(it) }
         val videoConfData = inputData.getString(VIDEO_CONF_DATA_KEY)!!.let { SerializationTool.convertDataClass<VideoConfData>(it) }
-        // Uriだと扱えないので内部固有ストレージへコピーする
-        val externalCopedFileList = mergeUriList.mapIndexed { index, uri ->
-            externalFileManager.copyFileFromUri(uri, index.toString())
-        }
+        val tempFolder = File(appContext.getExternalFilesDir(null), TEMP_FILE_FOLDER)
+        // ライブラリ側でUriとFileの差分を吸収するように
+        val requestData = ConecoRequestUriData(
+            context = appContext,
+            videoList = mergeUriList,
+            folderName = MEDIA_STORE_FOLDER_NAME,
+            resultFileName = fileName,
+            tempFileFolder = tempFolder
+        )
         // 作ったライブラリを利用して合成する
-        conecoCore = ConecoCore(externalCopedFileList, externalFileManager.tempResultFile, externalFileManager.tempFileFolder).apply {
+        conecoCore = ConecoCore(requestData).apply {
             configureAudioFormat(audioConfData.bitRate)
             configureVideoFormat(
                 videoConfData.bitRate,
@@ -83,9 +86,6 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         }.launchIn(scope)
         // 結合開始
         conecoCore!!.merge()
-        // あとしまつ
-        externalFileManager.createFileAndMoveVideoFile(fileName)
-        externalFileManager.delete()
         scope.cancel()
     }
 
@@ -145,6 +145,21 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
 
         /** 進行状態 */
         const val WORK_STATUS_KEY = "io.github.takusan23.coneco.workmanager.VideoMergeWork.WORK_STATUS_KEY"
+
+        /** 一時保存先 */
+        const val TEMP_FILE_FOLDER = "temp_file_folder"
+
+        /** MediaStoreの動画保存フォルダ名 */
+        const val MEDIA_STORE_FOLDER_NAME = "coneco"
+
+        /**
+         * 保存先パスを返す
+         *
+         * 注意：これはユーザーに提示するためだけに利用されるパス、JavaのFileAPIでは利用できない
+         * */
+        val resultMovieSaveFolder: String
+            get() = ConecoRequestUriData.resultFileFolder(MEDIA_STORE_FOLDER_NAME)
+
 
     }
 }

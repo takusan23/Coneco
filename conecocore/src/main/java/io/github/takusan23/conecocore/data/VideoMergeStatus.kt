@@ -1,4 +1,4 @@
-package io.github.takusan23.conecocore.tool
+package io.github.takusan23.conecocore.data
 
 /** 合成状況 */
 enum class VideoMergeStatus {
@@ -14,6 +14,9 @@ enum class VideoMergeStatus {
     /** 映像と音声をコンテナへ格納中 */
     CONCAT,
 
+    /** リソース開放中 */
+    CLEANUP,
+
     /** 終了 */
     FINISH;
 
@@ -25,15 +28,16 @@ enum class VideoMergeStatus {
         /**
          * 進捗に出すタスク数
          *
-         * VIDEO_MERGE AUDIO_MERGE CONCAT の3つ
+         * VIDEO_MERGE AUDIO_MERGE CONCAT CLEANUP
          * */
-        const val TASK_COUNT = 3
+        const val TASK_COUNT = 4
 
         /** 進捗をFloatで返す */
         fun progress(status: VideoMergeStatus) = when (status) {
             VIDEO_MERGE -> 1f
             AUDIO_MERGE -> 2f
             CONCAT -> 3f
+            CLEANUP -> 4f
             else -> 1f // それ以外は
         } / TASK_COUNT
     }

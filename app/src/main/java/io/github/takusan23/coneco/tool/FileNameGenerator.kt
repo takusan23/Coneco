@@ -37,7 +37,7 @@ object FileNameGenerator {
         val nowCalendar = Calendar.getInstance()
         return specialHolidayList.firstOrNull { (date, _) ->
             val (month, day) = parseDate(date)
-            month == (nowCalendar[Calendar.DAY_OF_MONTH] + 1) && day == nowCalendar[Calendar.DAY_OF_MONTH]
+            month == (nowCalendar[Calendar.MONTH] + 1) && day == nowCalendar[Calendar.DAY_OF_MONTH]
         }?.second
     }
 

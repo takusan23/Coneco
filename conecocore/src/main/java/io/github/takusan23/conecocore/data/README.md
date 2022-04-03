@@ -1,0 +1,4 @@
+# data
+
+データクラス置き場。
+ConecoRequestInterfaceへ共通部分を閉じ込めたのでUriだろうとFileだろうと動きます多分。

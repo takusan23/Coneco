@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.VideoConfData
-import io.github.takusan23.coneco.tool.ExternalFileManager
+import io.github.takusan23.coneco.workmanager.VideoMergeWork
 
 /**
  * 結合後のファイル名を決めるやつ。面倒いので速攻TextFieldへフォーカスを当ててます。
@@ -66,7 +66,7 @@ fun MergeEditResultFileName(
                     modifier = Modifier.weight(1f),
                     text = """
                     保存先は以下になります：
-                    ${ExternalFileManager.resultMovieSaveFolder}
+                    ${VideoMergeWork.resultMovieSaveFolder}
                     """.trimIndent()
                 )
             }

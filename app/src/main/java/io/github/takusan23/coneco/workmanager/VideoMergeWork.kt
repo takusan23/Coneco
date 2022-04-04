@@ -35,22 +35,30 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
     private var conecoCore: ConecoCore? = null
 
     override suspend fun doWork(): Result {
-        withContext(Dispatchers.Default) {
-            try {
-                // 長期間タスクですよ...
-                setForeground(createForegroundInfo())
-                // 結合を行う
-                startMerge()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // WorkManagerがキャンセルになると、CancellationException が投げられるのでキャッチする
-                conecoCore?.stop()
-            }
+        try {
+            // 長期間タスクですよ...
+            setForeground(createForegroundInfo())
+            // 結合を行う
+            val mergeTime = withContext(Dispatchers.Default) { startMerge() }
+            // 結合にかかった時間を渡して成功
+            return Result.success(workDataOf(WORK_TOTAL_MERGE_TIME to mergeTime))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // WorkManagerがキャンセルになると、CancellationException が投げられるのでキャッチする
+            conecoCore?.stop()
+            return Result.failure()
         }
-        return Result.success()
     }
 
-    /** 動画の結合を行う */
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return createForegroundInfo()
+    }
+
+    /**
+     * 動画の結合を行う
+     *
+     * @return 結合にかかった時間
+     * */
     private suspend fun startMerge() = withContext(Dispatchers.Default) {
         // 各データを取り出す
         val fileName = inputData.getString(RESULT_FILE_NAME)!!
@@ -85,8 +93,9 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
             setForeground(createForegroundInfo(10, (VideoMergeStatus.progress(it) * 10).toInt()))
         }.launchIn(scope)
         // 結合開始
-        conecoCore!!.merge()
+        val mergeTime = conecoCore!!.merge()
         scope.cancel()
+        return@withContext mergeTime
     }
 
     /**
@@ -146,11 +155,14 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         /** 進行状態 */
         const val WORK_STATUS_KEY = "io.github.takusan23.coneco.workmanager.VideoMergeWork.WORK_STATUS_KEY"
 
+        /** 結合にかかった時間 */
+        const val WORK_TOTAL_MERGE_TIME = "io.github.takusan23.coneco.workmanager.VideoMergeWork.WORK_TOTAL_MERGE_TIME"
+
         /** 一時保存先 */
         const val TEMP_FILE_FOLDER = "temp_file_folder"
 
         /** MediaStoreの動画保存フォルダ名 */
-        const val MEDIA_STORE_FOLDER_NAME = "coneco"
+        const val MEDIA_STORE_FOLDER_NAME = "Coneco"
 
         /**
          * 保存先パスを返す

@@ -14,10 +14,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import androidx.work.WorkInfo
 import io.github.takusan23.coneco.tool.WorkManagerTool
 import io.github.takusan23.coneco.ui.component.ConecoAppBar
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
+import kotlinx.coroutines.flow.filterNotNull
 
 /**
  * 結合画面遷移を行う画面
@@ -37,17 +37,23 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
     // 多重起動は想定しない（MediaCodecのデコーダー多分そんなに数が無い）
     val runningTask = remember { WorkManagerTool.existsRunningTask(context, lifecycleOwner) }.collectAsState(null)
     LaunchedEffect(key1 = Unit, block = {
-        if (runningTask.value?.state == WorkInfo.State.RUNNING) {
-            navController.navigate(
-                route = NavigationScreenData.VideoMergeScreenData.screenName,
-                navOptions = navOptions {
-                    popUpTo(NavigationScreenData.VideoSelectScreenData.screenName) {
-                        // 結果的にActivity終了へ
-                        inclusive = true
-                    }
+        WorkManagerTool.existsRunningTask(context, lifecycleOwner)
+            .filterNotNull()
+            .collect {
+                val currentRoute = navController.currentBackStackEntry?.destination?.route ?: NavigationScreenData.VideoSelectScreenData.screenName
+                // 進捗画面にいない場合は飛ばす
+                if (NavigationScreenData.findScreenOrNull(currentRoute) != NavigationScreenData.VideoMergeScreenData) {
+                    navController.navigate(
+                        route = NavigationScreenData.VideoMergeScreenData.screenName,
+                        navOptions = navOptions {
+                            popUpTo(NavigationScreenData.VideoSelectScreenData.screenName) {
+                                // 結果的にActivity終了へ
+                                inclusive = true
+                            }
+                        }
+                    )
                 }
-            )
-        }
+            }
     })
 
     Scaffold(

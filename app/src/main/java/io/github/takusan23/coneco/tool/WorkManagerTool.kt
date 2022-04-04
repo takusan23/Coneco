@@ -45,6 +45,21 @@ object WorkManagerTool {
     }
 
     /**
+     * 結合にかかった時間を取得する
+     *
+     * @param context [Context]
+     * @param owner LifecycleOwner
+     * @return 終わるまで-1
+     * */
+    fun collectMergeTotalTime(context: Context, owner: LifecycleOwner): StateFlow<Long> {
+        val state = MutableStateFlow(-1L)
+        WorkManager.getInstance(context).getWorkInfosByTagLiveData(VideoMergeWork.WORKER_TAG).observe(owner) { list ->
+            state.value = list.firstOrNull { it.state.isFinished }?.outputData?.getLong(VideoMergeWork.WORK_TOTAL_MERGE_TIME, -1L) ?: -1L
+        }
+        return state
+    }
+
+    /**
      * 実行中タスクを終了させる
      *
      * @param context [Context]

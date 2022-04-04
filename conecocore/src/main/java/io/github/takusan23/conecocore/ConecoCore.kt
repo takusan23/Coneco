@@ -91,8 +91,13 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
 
     /**
      * 結合を開始する
+     *
+     * @return 処理が終わるまでの時間（ミリ秒）
      * */
-    suspend fun merge() {
+    suspend fun merge(): Long {
+        // 時間を測ろう！
+        val startMs = System.currentTimeMillis()
+
         // それぞれのファイルの結合
         _status.value = VideoMergeStatus.VIDEO_MERGE
         videoDataMerge?.merge()
@@ -106,6 +111,9 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
         requestData.release()
         // 終了
         _status.value = VideoMergeStatus.FINISH
+
+        // 時間
+        return System.currentTimeMillis() - startMs
     }
 
     /**

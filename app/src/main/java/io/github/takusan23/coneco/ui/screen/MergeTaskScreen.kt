@@ -10,11 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.work.WorkInfo
 import io.github.takusan23.coneco.R
+import io.github.takusan23.coneco.tool.TimeTool
 import io.github.takusan23.coneco.tool.WorkManagerTool
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 import io.github.takusan23.conecocore.data.VideoMergeStatus
@@ -30,6 +32,7 @@ fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: N
     // WorkManagerのステータスをLiveDataで受け取る
     val workStatus = remember { WorkManagerTool.collectMergeState(context, lifecycleOwner) }.collectAsState()
     val workInfo = remember { WorkManagerTool.existsRunningTask(context, lifecycleOwner) }.collectAsState()
+    val totalMergeTime = remember { WorkManagerTool.collectMergeTotalTime(context, lifecycleOwner) }.collectAsState()
 
     Scaffold {
         Column {
@@ -59,6 +62,7 @@ fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: N
                     // 終了ボタン
                     Button(
                         modifier = Modifier.padding(top = 10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         onClick = { WorkManagerTool.cancel(context) }
                     ) {
                         Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = null)
@@ -66,15 +70,26 @@ fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: N
                         Text(text = "強制終了")
                     }
                 } else {
-                    Text(text = "終了です")
+                    Text(
+                        modifier = Modifier.padding(5.dp),
+                        text = "終了です"
+                    )
+                    // 合計時間
+                    if (totalMergeTime.value > 0) {
+                        Text(
+                            modifier = Modifier.padding(5.dp),
+                            textAlign = TextAlign.Center,
+                            text = """
+                                合計時間：${TimeTool.millSecToFormat(totalMergeTime.value)}
+                                (${totalMergeTime.value} ms)
+                            """.trimIndent()
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-/** 映像の合成、音声の合成、コンテナへ格納 の3ステップ */
-private const val VideoMergeStep = 3
 
 /**
  * [VideoMergeStatus]の進捗を表示するインジケーター

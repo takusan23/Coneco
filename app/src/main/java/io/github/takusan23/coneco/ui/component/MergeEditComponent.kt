@@ -99,7 +99,12 @@ fun MergeEditAudioConfig(
                 .padding(10.dp)
                 .fillMaxWidth(),
             initialNum = (data.bitRate / 1000),
-            label = { Text(text = "音声のビットレート (単位 : K)") },
+            label = {
+                Text(
+                    text = "音声のビットレート (単位 : K)",
+                    maxLines = 1
+                )
+            },
             onNumberChange = { onDataChange(data.copy(bitRate = it * 1000)) }
         )
     }
@@ -129,7 +134,12 @@ fun MergeEditVideoConfig(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth(),
-                label = { Text(text = "映像のビットレート (単位 : K)") },
+                label = {
+                    Text(
+                        text = "映像のビットレート (単位 : K)",
+                        maxLines = 1
+                    )
+                },
                 initialNum = (data.bitRate / 1000),
                 onNumberChange = { onDataChange(data.copy(bitRate = it * 1000)) }
             )
@@ -137,7 +147,12 @@ fun MergeEditVideoConfig(
                 modifier = Modifier
                     .padding(5.dp)
                     .fillMaxWidth(),
-                label = { Text(text = "フレームレート (fps)") },
+                label = {
+                    Text(
+                        text = "フレームレート (fps)",
+                        maxLines = 1
+                    )
+                },
                 initialNum = data.frameRate,
                 onNumberChange = { onDataChange(data.copy(frameRate = it)) }
             )
@@ -149,7 +164,12 @@ fun MergeEditVideoConfig(
                         .weight(1f)
                         .fillMaxWidth(),
                     initialNum = data.videoHeight,
-                    label = { Text(text = "縦のサイズ (空白でも可)") },
+                    label = {
+                        Text(
+                            text = "縦のサイズ (空白でも可)",
+                            maxLines = 1
+                        )
+                    },
                     onNumberChange = { onDataChange(data.copy(videoHeight = it)) }
                 )
                 NullableNumberOnlyOutlinedTextField(
@@ -158,7 +178,12 @@ fun MergeEditVideoConfig(
                         .weight(1f)
                         .fillMaxWidth(),
                     initialNum = data.videoWidth,
-                    label = { Text(text = "横のサイズ (空白でも可)") },
+                    label = {
+                        Text(
+                            text = "横のサイズ (空白でも可)",
+                            maxLines = 1
+                        )
+                    },
                     onNumberChange = { onDataChange(data.copy(videoWidth = it)) }
                 )
             }

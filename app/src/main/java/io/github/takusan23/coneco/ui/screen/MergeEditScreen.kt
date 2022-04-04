@@ -71,8 +71,10 @@ fun MergeEditScreen(
                 onClick = {
                     // 画面切り替え
                     navController.navigate(NavigationScreenData.VideoMergeScreenData.screenName, navOptions {
-                        // 最初の動画選択まで戻す
-                        popUpTo(NavigationScreenData.VideoSelectScreenData.screenName)
+                        // もう戻せないので終了させる
+                        popUpTo(NavigationScreenData.VideoSelectScreenData.screenName) {
+                            inclusive = true
+                        }
                     })
                     // 結合開始
                     mergeScreenViewModel.startMerge()

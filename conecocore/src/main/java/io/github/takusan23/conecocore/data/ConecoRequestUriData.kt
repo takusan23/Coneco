@@ -18,13 +18,13 @@ import java.io.File
  * 保存先は [resultFileFolder] になります。
  *
  * @param context [Context]
- * @param videoList 結合したい動画のUriのリスト
+ * @param videoUriList 結合したい動画のUriのリスト
  * @param resultFileName ファイル名
  * @param tempFileFolder 一時保存先
  * */
 data class ConecoRequestUriData(
     val context: Context,
-    val videoList: List<Uri>,
+    val videoUriList: List<Uri>,
     val folderName: String = "Coneco",
     val resultFileName: String,
     val tempFileFolder: File,
@@ -37,7 +37,7 @@ data class ConecoRequestUriData(
     private val tempResultFile = File(context.getExternalFilesDir(null), TEMP_RESULT_FILE).apply { createNewFile() }
 
     /** 結合する動画。固有ストレージコピー版 */
-    private val copedVideoList = arrayListOf<File>()
+    private val copedVideoList = arrayListOf<String>()
 
     /** 結合先のファイルを返す */
     override val mergeResultFile: File
@@ -48,10 +48,12 @@ data class ConecoRequestUriData(
         get() = tempFileFolder.apply { mkdir() }
 
     /** Uriが扱えないので、一旦内部ストレージへコピーしてその保存先を返す */
-    override suspend fun getMergeVideoList(): List<File> {
+    override suspend fun getMergeVideoList(): List<String> {
         // 一度だけコピーする
         if (copedVideoList.isEmpty()) {
-            copedVideoList += videoList.mapIndexed { index, uri -> copyFileFromUri(uri, index.toString()) }
+            copedVideoList += videoUriList
+                .mapIndexed { index, uri -> copyFileFromUri(uri, index.toString()) }
+                .map { it.path }
         }
         return copedVideoList
     }

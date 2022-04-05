@@ -16,17 +16,17 @@ import java.io.File
  *
  * 例外処理を忘れずにやってください。
  *
- * @param videoList 結合する動画、音声ファイルの配列。入っている順番どおりに結合します。
+ * @param videoPathList 結合する動画、音声ファイルの配列。入っている順番どおりに結合します。
  * @param resultFile 結合したファイル
  * @param bitRate ビットレート。何故か取れなかった
  * @param frameRate フレームレート。何故か取れなかった
  * */
 class VideoDataMerge(
-    videoList: List<File>,
+    videoPathList: List<String>,
     private val resultFile: File,
     private val bitRate: Int = 1_000_000, // 1Mbps
     private val frameRate: Int = 30, // 30fps
-) : VideoDataMergeAbstract(videoList, resultFile) {
+) : VideoDataMergeAbstract(videoPathList, resultFile) {
 
     /** 取り出した[MediaFormat] */
     private var currentMediaFormat: MediaFormat? = null
@@ -65,7 +65,7 @@ class VideoDataMerge(
         }
 
         // 最初の動画を解析
-        extractVideoFile(videoListIterator.next().path)
+        extractVideoFile(videoListIterator.next())
 
         // 解析結果から各パラメータを取り出す
         // 動画の幅、高さは16の倍数である必要があります。（どこに書いてんねんクソが）
@@ -143,12 +143,12 @@ class VideoDataMerge(
                         // データがないので次データへ
                         if (videoListIterator.hasNext()) {
                             // 次データへ
-                            val file = videoListIterator.next()
+                            val filePath = videoListIterator.next()
                             // 多分いる
                             decodeMediaCodec.queueInputBuffer(inputBufferId, 0, 0, 0, 0)
                             // 動画の情報を読み出す
                             currentMediaExtractor!!.release()
-                            extractVideoFile(file.path)
+                            extractVideoFile(filePath)
                         } else {
                             // データなくなった場合は終了
                             decodeMediaCodec.queueInputBuffer(inputBufferId, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)

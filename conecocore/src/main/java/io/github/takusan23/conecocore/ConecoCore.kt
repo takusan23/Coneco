@@ -39,7 +39,7 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
     suspend fun configureAudioFormat(bitRate: Int = 192_000) {
         // 一時保存先
         audioDataMerge = AudioDataMerge(
-            videoList = requestData.getMergeVideoList(),
+            videoPathList = requestData.getMergeVideoList(),
             resultFile = requestData.tempAudioFile,
             tempRawDataFile = requestData.tempRawAudioFile,
             bitRate = bitRate
@@ -70,7 +70,7 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
         videoDataMerge = when {
             isUseOpenGl || (videoHeight != null && videoWidth != null) -> {
                 VideoDataOpenGlMerge(
-                    videoList = videoList,
+                    videoPathList = videoList,
                     resultFile = tempVideoFile,
                     bitRate = bitRate,
                     frameRate = frameRate,
@@ -80,7 +80,7 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
             }
             else -> {
                 VideoDataMerge(
-                    videoList = videoList,
+                    videoPathList = videoList,
                     resultFile = tempVideoFile,
                     bitRate = bitRate,
                     frameRate = frameRate

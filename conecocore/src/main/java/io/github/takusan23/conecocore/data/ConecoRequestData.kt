@@ -6,12 +6,12 @@ import java.io.File
 /**
  * [ConecoCore]へリクエストする際に渡すデータ
  *
- * @param videoList 繋げたい動画のファイルの配列
+ * @param videoFilePathList 繋げたい動画のファイルパスの配列
  * @param resultFile 繋げたファイルの保存先
  * @param tempFileFolder 一時保存先
  * */
 data class ConecoRequestData(
-    val videoList: List<File>,
+    val videoFilePathList: List<String>,
     val resultFile: File,
     val tempFileFolder: File,
 ) : ConecoRequestInterface {
@@ -25,7 +25,7 @@ data class ConecoRequestData(
         get() = tempFileFolder
 
     /** 結合する動画 */
-    override suspend fun getMergeVideoList() = videoList
+    override suspend fun getMergeVideoList() = videoFilePathList
 
     /** あとしまつ */
     override suspend fun release() {

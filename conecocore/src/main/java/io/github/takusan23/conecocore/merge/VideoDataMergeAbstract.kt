@@ -6,15 +6,15 @@ import java.io.File
 /**
  * 映像を結合する処理の共通部分を切り出した
  *
- * @param videoList 結合する動画の配列
+ * @param videoPathList 結合する動画のパス配列
  * @param resultFile 結合後のファイル
  * */
 abstract class VideoDataMergeAbstract(
-    videoList: List<File>,
+    videoPathList: List<String>,
     private val resultFile: File,
 ) {
     /** 結合する動画の配列のイテレータ */
-    protected val videoListIterator = videoList.listIterator()
+    protected val videoListIterator = videoPathList.listIterator()
 
     /** ファイル合成 */
     protected val mediaMuxer by lazy { MediaMuxer(resultFile.path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4) }

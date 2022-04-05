@@ -12,13 +12,13 @@ import java.io.File
  *
  * 例外処理を忘れずにやってください。
  *
- * @param videoList 結合する動画、音声ファイルの配列。入っている順番どおりに結合します。
+ * @param videoPathList 結合する動画、音声ファイルのパスの配列。入っている順番どおりに結合します。
  * @param resultFile 結合したファイルの保存先
  * @param tempRawDataFile 一時的ファイル保存先
  * @param bitRate ビットレート
  * */
 class AudioDataMerge(
-    videoList: List<File>,
+    videoPathList: List<String>,
     private val resultFile: File,
     private val tempRawDataFile: File,
     private val bitRate: Int = 192_000,
@@ -31,7 +31,7 @@ class AudioDataMerge(
     private val INPUT_BUFFER_SIZE = 655360
 
     /** 結合する動画の配列のイテレータ */
-    private val videoListIterator = videoList.listIterator()
+    private val videoListIterator = videoPathList.listIterator()
 
     /** 一時ファイル保存で使う */
     private val bufferedOutputStream by lazy { tempRawDataFile.outputStream().buffered() }
@@ -75,7 +75,7 @@ class AudioDataMerge(
         }
 
         // 最初の動画を解析
-        extractVideoFile(videoListIterator.next().path)
+        extractVideoFile(videoListIterator.next())
 
         // 解析結果から各パラメータを取り出す
         val mimeType = currentMediaFormat?.getString(MediaFormat.KEY_MIME)!! // AACなら audio/mp4a-latm
@@ -142,12 +142,12 @@ class AudioDataMerge(
                     // データがないので次データへ
                     if (videoListIterator.hasNext()) {
                         // 次データへ
-                        val file = videoListIterator.next()
+                        val filePath = videoListIterator.next()
                         // 多分いる
                         decodeMediaCodec.queueInputBuffer(inputBufferId, 0, 0, 0, 0)
                         // 動画の情報を読み出す
                         currentMediaExtractor!!.release()
-                        extractVideoFile(file.path)
+                        extractVideoFile(filePath)
                     } else {
                         // データなくなった場合は終了フラグを立てる
                         decodeMediaCodec.queueInputBuffer(inputBufferId, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)

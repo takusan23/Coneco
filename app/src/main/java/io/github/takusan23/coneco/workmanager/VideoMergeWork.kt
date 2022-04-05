@@ -69,7 +69,7 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         // ライブラリ側でUriとFileの差分を吸収するように
         val requestData = ConecoRequestUriData(
             context = appContext,
-            videoList = mergeUriList,
+            videoUriList = mergeUriList,
             folderName = MEDIA_STORE_FOLDER_NAME,
             resultFileName = fileName,
             tempFileFolder = tempFolder

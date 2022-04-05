@@ -15,7 +15,7 @@ import java.io.File
  *
  * 動画の解像度とかを変えられます...
  *
- * @param videoList 結合する動画、音声ファイルの配列。入っている順番どおりに結合します。
+ * @param videoPathList 結合する動画、音声ファイルのパスの配列。入っている順番どおりに結合します。
  * @param resultFile 結合したファイル
  * @param bitRate ビットレート。何故か取れなかった
  * @param frameRate フレームレート。何故か取れなかった
@@ -23,13 +23,13 @@ import java.io.File
  * @param videoWidth 動画の幅を変える場合は変えられます。16の倍数であることが必須です
  * */
 class VideoDataOpenGlMerge(
-    videoList: List<File>,
+    videoPathList: List<String>,
     private val resultFile: File,
     private val bitRate: Int = 1_000_000, // 1Mbps
     private val frameRate: Int = 30, // 30fps
     private val videoWidth: Int? = null,
     private val videoHeight: Int? = null,
-) : VideoDataMergeAbstract(videoList, resultFile) {
+) : VideoDataMergeAbstract(videoPathList, resultFile) {
 
     /** 取り出した[MediaFormat] */
     private var currentMediaFormat: MediaFormat? = null
@@ -69,7 +69,7 @@ class VideoDataOpenGlMerge(
         }
 
         // 最初の動画を解析
-        extractVideoFile(videoListIterator.next().path)
+        extractVideoFile(videoListIterator.next())
 
         // 解析結果から各パラメータを取り出す
         val mimeType = currentMediaFormat?.getString(MediaFormat.KEY_MIME)!! // video/avc
@@ -145,12 +145,12 @@ class VideoDataOpenGlMerge(
                         // データがないので次データへ
                         if (videoListIterator.hasNext()) {
                             // 次データへ
-                            val file = videoListIterator.next()
+                            val filePath = videoListIterator.next()
                             // 多分いる
                             decodeMediaCodec.queueInputBuffer(inputBufferId, 0, 0, 0, 0)
                             // 動画の情報を読み出す
                             currentMediaExtractor!!.release()
-                            extractVideoFile(file.path)
+                            extractVideoFile(filePath)
                         } else {
                             // データなくなった場合は終了
                             decodeMediaCodec.queueInputBuffer(inputBufferId, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)

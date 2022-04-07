@@ -15,6 +15,8 @@ import io.github.takusan23.coneco.tool.FileNameGenerator
 import io.github.takusan23.coneco.tool.GetVideoData
 import io.github.takusan23.coneco.tool.SerializationTool
 import io.github.takusan23.coneco.workmanager.VideoMergeWork
+import io.github.takusan23.conecohls.data.ConecoRequestHlsData
+import io.github.takusan23.conecohls.data.MultiVariantPlaylist
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,6 +29,9 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
     private val _audioMergeEditData = MutableStateFlow(AudioConfData())
     private val _videoMergeEditData = MutableStateFlow(VideoConfData())
     private val _resultFileName = MutableStateFlow("${FileNameGenerator.easterEgg() ?: ""}.mp4")
+    private val _hlsMasterPlaylistUrl = MutableStateFlow("")
+    private val _hlsPlaylistUrl = MutableStateFlow<String?>(null)
+    private val _hlsQualityList = MutableStateFlow<List<MultiVariantPlaylist>?>(null)
 
     /** 選択した動画をFlowで返す */
     val selectedVideoList = _selectedVideoList as StateFlow<List<SelectVideoItemData>>
@@ -39,6 +44,15 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
 
     /** 保存先ファイル名 */
     val resultFileName = _resultFileName as StateFlow<String>
+
+    /** HLSの場合 マスタープレイリスト(m3u8)のURL */
+    val hlsMasterPlaylistUrl = _hlsMasterPlaylistUrl as StateFlow<String>
+
+    /** HLSの場合 動画のURLが書いてあるプレイリストのURL */
+    val hlsPlaylistUrl = _hlsPlaylistUrl as StateFlow<String?>
+
+    /** HLSの場合 マスタープレイリストの中の画質一覧を返す */
+    val hlsQualityList = _hlsQualityList as StateFlow<List<MultiVariantPlaylist>?>
 
     /**
      * 動画選択から戻ってきた際に、動画を追加する
@@ -85,6 +99,35 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
      * */
     fun setResultFileName(fileName: String) {
         _resultFileName.value = fileName
+    }
+
+    /**
+     * HLSのプレイリストURLをセットする
+     *
+     * @param m3u8Url m3u8のURL
+     * */
+    fun setHlsPlaylistUrl(m3u8Url: String) {
+        _hlsMasterPlaylistUrl.value = m3u8Url
+    }
+
+    /**
+     * HLSがマスタープレイリストだった場合にどの画質のURLにするか
+     *
+     * @param hlsPlaylistUrl 各プレイリストのURL
+     * */
+    fun setHlsQualityPlaylistUrl(hlsPlaylistUrl: String) {
+        _hlsPlaylistUrl.value = hlsPlaylistUrl
+    }
+
+    /**
+     * HLSのプレイリストがマスタープレイリストだった場合に画質一覧をFlowで返す。
+     *
+     * ただのプレイリストだった場合は空を返す。
+     * */
+    fun getHlsMasterPlaylistQualityList() {
+        viewModelScope.launch {
+            _hlsQualityList.value = ConecoRequestHlsData.getMasterPlaylist(hlsMasterPlaylistUrl.value) ?: emptyList()
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package io.github.takusan23.conecohls.data
 
 import io.github.takusan23.conecocore.data.ConecoRequestInterface
+import io.github.takusan23.conecohls.data.ConecoRequestHlsData.Companion.getMasterPlaylist
 import io.github.takusan23.conecohls.parser.PlaylistParser
 import io.github.takusan23.conecohls.playlist.RequestPlaylist
 import kotlinx.coroutines.Dispatchers
@@ -10,14 +11,12 @@ import java.io.File
 /**
  * [ConecoRequestInterface]のHLS対応版、生放送は対応してません（#EXT-X-PLAYLIST-TYPE:VOD のみ）
  *
- * @param m3u8Url なんとか.m3u8 のパス、playlist、master両方行けるはず
- * @param selectBitRate マスタープレイリストの場合は選択するビットレートを入れてください。最高画質、プレイリストの場合はnullでいいです。
+ * @param m3u8PlaylistUrl なんとか.m3u8 のパス、プレイリストのみ受け付けます。マスタープレイリスト（マルチバリアントプレイリスト）の場合は[getMasterPlaylist]参照。
  * @param resultFile 繋げたファイルの保存先
  * @param tempFileFolder 一時保存フォルダをください
  * */
 data class ConecoRequestHlsData(
-    val m3u8Url: String,
-    val selectBitRate: Long? = null,
+    val m3u8PlaylistUrl: String,
     val resultFile: File,
     val tempFileFolder: File,
 ) : ConecoRequestInterface {
@@ -34,14 +33,7 @@ data class ConecoRequestHlsData(
     override suspend fun getMergeVideoList(): List<String> {
         if (mpeg2TsUrlList.isEmpty()) {
             // プレイリストを取得する
-            val multiVariantPlaylist = getMasterPlaylist(m3u8Url)
-            // 画質。もしビットレートの指定忘れた場合は最高画質にする
-            val playlistM3u8 = if (multiVariantPlaylist != null) {
-                multiVariantPlaylist.firstOrNull { it.bandWidth == selectBitRate }?.url ?: multiVariantPlaylist.firstOrNull()!!.url
-            } else {
-                m3u8Url
-            }
-            val (playlist, appendUrl) = RequestPlaylist.getPlaylist(playlistM3u8)
+            val (playlist, appendUrl) = RequestPlaylist.getPlaylist(m3u8PlaylistUrl)
             // MPEG2-TSだけが書いてあるタイプのプレイリスト
             mpeg2TsUrlList.addAll(PlaylistParser.parsePlaylist(playlist, appendUrl))
         }
@@ -57,9 +49,11 @@ data class ConecoRequestHlsData(
         /**
          * 指定した[m3u8Url]がマスタープレイリスト（マルチバリアントプレイリスト）かどうか確認する。
          *
+         * [ConecoRequestHlsData]ではプレイリストしか扱わないため、この関数を利用してほしい画質のURLを選ぶ必要があります。
+         *
          * プレイリストの場合はnullです。
          * マスタープレイリストの場合は画質一覧を返しますので、
-         * 好きな画質の[MultiVariantPlaylist.bandWidth]を[ConecoRequestHlsData.selectBitRate]に渡してください。
+         * 好きな画質の[MultiVariantPlaylist.url]を[ConecoRequestHlsData.m3u8PlaylistUrl]に渡してください。
          *
          * @return 画質の選択があれば画質一覧
          * */

@@ -28,7 +28,7 @@ import io.github.takusan23.coneco.workmanager.VideoMergeWork
  * @param onFileNameChange ファイル名が変わったら呼ばれる
  * */
 @Composable
-fun MergeEditResultFileName(
+fun MergeResultFileNameConfigComponent(
     fileName: String,
     onFileNameChange: (String) -> Unit,
 ) {
@@ -39,7 +39,7 @@ fun MergeEditResultFileName(
         focusRequester.requestFocus()
     })
 
-    MergeEditCommon(
+    MergeConfigCommon(
         isOpen = isOpen.value,
         iconRes = R.drawable.ic_outline_drive_folder_upload_24,
         labelRes = R.string.merge_edit_screen_save_folder,
@@ -81,13 +81,13 @@ fun MergeEditResultFileName(
  * @param onDataChange データが変わったら呼ばれる
  */
 @Composable
-fun MergeEditAudioConfig(
+fun MergeAudioConfigComponent(
     data: AudioConfData,
     onDataChange: (AudioConfData) -> Unit,
 ) {
     val isOpen = remember { mutableStateOf(false) }
 
-    MergeEditCommon(
+    MergeConfigCommon(
         isOpen = isOpen.value,
         iconRes = R.drawable.ic_outline_audiotrack_24,
         labelRes = R.string.merge_edit_screen_audio_conf,
@@ -117,13 +117,13 @@ fun MergeEditAudioConfig(
  * @param onDataChange データが変わったら呼ばれる
  * */
 @Composable
-fun MergeEditVideoConfig(
+fun MergeVideoConfigComponent(
     data: VideoConfData,
     onDataChange: (VideoConfData) -> Unit,
 ) {
     val isOpen = remember { mutableStateOf(false) }
 
-    MergeEditCommon(
+    MergeConfigCommon(
         isOpen = isOpen.value,
         iconRes = R.drawable.ic_outline_videocam_24,
         labelRes = R.string.merge_edit_screen_video_conf,
@@ -217,7 +217,7 @@ fun MergeEditVideoConfig(
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MergeEditCommon(
+private fun MergeConfigCommon(
     modifier: Modifier = Modifier,
     isOpen: Boolean,
     iconRes: Int,
@@ -242,14 +242,12 @@ private fun MergeEditCommon(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(30.dp),
+                        modifier = Modifier.size(30.dp),
                         painter = painterResource(id = iconRes),
                         contentDescription = null
                     )
                     Text(
-                        modifier = Modifier
-                            .weight(1f),
+                        modifier = Modifier.weight(1f),
                         text = stringResource(id = labelRes),
                         fontSize = 18.sp,
                     )

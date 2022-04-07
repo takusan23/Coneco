@@ -25,7 +25,7 @@ object PlaylistParser {
     private val EXT_X_STREAM_INF_BANDWIDTH_REGEX = "BANDWIDTH=(.*)".toRegex()
 
     /** マルチバリアントプレイリストの解像度を取得する正規表現 */
-    private val EXT_X_STREAM_INF_RESOLUTION = "RESOLUTION=(.*)".toRegex()
+    private val EXT_X_STREAM_INF_RESOLUTION_REGEX = "RESOLUTION=(.*)".toRegex()
 
     /**
      * 与えられたプレイリストがマルチバリアントプレイリストの場合はtrue
@@ -72,7 +72,7 @@ object PlaylistParser {
                 val variantParams = readLine.replace(EXT_X_STREAM_INF, "").split(",")
                 // パラメーターはない場合があるかも？
                 val bandWidth = variantParams.mapNotNull { EXT_X_STREAM_INF_BANDWIDTH_REGEX.find(it) }.firstOrNull()?.groupValues?.get(1)?.toLongOrNull()
-                val resolution = variantParams.mapNotNull { EXT_X_STREAM_INF_RESOLUTION.find(it) }.firstOrNull()?.groupValues?.get(1)
+                val resolution = variantParams.mapNotNull { EXT_X_STREAM_INF_RESOLUTION_REGEX.find(it) }.firstOrNull()?.groupValues?.get(1)
                 // EXT-X-STREAM-INFの下にURLが書いてあるので
                 val url = playlistIterator.next().let {
                     // 絶対パスに変換する

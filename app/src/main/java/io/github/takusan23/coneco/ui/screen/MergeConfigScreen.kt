@@ -14,9 +14,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.navOptions
 import io.github.takusan23.coneco.R
-import io.github.takusan23.coneco.ui.component.MergeEditAudioConfig
-import io.github.takusan23.coneco.ui.component.MergeEditResultFileName
-import io.github.takusan23.coneco.ui.component.MergeEditVideoConfig
+import io.github.takusan23.coneco.ui.component.MergeAudioConfigComponent
+import io.github.takusan23.coneco.ui.component.MergeResultFileNameConfigComponent
+import io.github.takusan23.coneco.ui.component.MergeVideoConfigComponent
 import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 
 /**
@@ -27,7 +27,7 @@ import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MergeEditScreen(
+fun MergeConfigScreen(
     mergeScreenViewModel: MergeScreenViewModel,
     navController: NavHostController,
 ) {
@@ -48,19 +48,19 @@ fun MergeEditScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 // 結合後のファイルの名前
-                MergeEditResultFileName(
+                MergeResultFileNameConfigComponent(
                     fileName = fileName.value,
                     onFileNameChange = { mergeScreenViewModel.setResultFileName(it) }
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 // 音声の設定
-                MergeEditAudioConfig(
+                MergeAudioConfigComponent(
                     data = audioMergeEditData.value,
                     onDataChange = { mergeScreenViewModel.updateAudioMergeEditData(it) }
                 )
                 Spacer(modifier = Modifier.size(20.dp))
                 // 映像の設定
-                MergeEditVideoConfig(
+                MergeVideoConfigComponent(
                     data = videoMergeEditData.value,
                     onDataChange = { mergeScreenViewModel.updateVideoMergeEditData(it) }
                 )

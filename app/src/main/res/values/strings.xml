@@ -6,4 +6,6 @@
     <string name="merge_edit_screen_save_folder">The name of the film</string>
     <string name="merge_edit_screen_audio_conf">Audio settings</string>
     <string name="merge_edit_screen_video_conf">Video settings</string>
+    <string name="screen_title_video_source_select">Select the location of the video to connect</string>
+    <string name="screen_title_video_hls_select">HLS playlist settings</string>
 </resources>

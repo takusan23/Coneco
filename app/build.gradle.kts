@@ -49,6 +49,8 @@ android {
 dependencies {
     // conecocore 読み込み
     implementation(project(":conecocore"))
+    // conecocore + hls 読み込み
+    implementation(project(":conecohls"))
 
     // kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")

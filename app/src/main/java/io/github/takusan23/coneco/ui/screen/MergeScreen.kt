@@ -4,8 +4,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -20,7 +18,7 @@ import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 import kotlinx.coroutines.flow.filterNotNull
 
 /**
- * 結合画面遷移を行う画面
+ * 画像選択から合成までを担当する画面
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +33,6 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
 
     // 起動後に実行中タスクがある場合はそっちに飛ばす
     // 多重起動は想定しない（MediaCodecのデコーダー多分そんなに数が無い）
-    val runningTask = remember { WorkManagerTool.existsRunningTask(context, lifecycleOwner) }.collectAsState(null)
     LaunchedEffect(key1 = Unit, block = {
         WorkManagerTool.existsRunningTask(context, lifecycleOwner)
             .filterNotNull()
@@ -60,30 +57,44 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
         topBar = {
             ConecoAppBar(
                 title = stringResource(id = currentNavigationScreen!!.titleBarLabelResId),
-                indicatorCount = NavigationScreenData.pageSize,
-                indicatorProgress = currentNavigationScreen.indicatorProgress
+                indicatorCount = NavigationScreenData.VIDEO_MERGE_STEP,
+                indicatorProgress = NavigationScreenData.getProgress(currentNavigationScreen)
             )
         },
         content = {
             // 画面切り替え
-            NavHost(navController = navController, startDestination = NavigationScreenData.VideoSelectScreenData.screenName) {
+            NavHost(navController = navController, startDestination = NavigationScreenData.VideoSourceSelectScreenData.screenName) {
+                composable(NavigationScreenData.VideoSourceSelectScreenData.screenName) {
+                    MergeVideoSourceSelectScreen(
+                        navController = navController
+                    )
+                }
                 composable(NavigationScreenData.VideoSelectScreenData.screenName) {
                     MergeVideoSelectScreen(
                         mergeScreenViewModel = mergeScreenViewModel,
                         navController = navController
                     )
                 }
-                composable(NavigationScreenData.VideoEditScreenData.screenName) {
-                    MergeEditScreen(
+                composable(NavigationScreenData.VideoHlsConfigScreenData.screenName) {
+                    MergeVideoHlsConfigScreen(
+                        mergeScreenViewModel = mergeScreenViewModel,
+                        navController = navController
+                    )
+                }
+                composable(NavigationScreenData.VideoSelectScreenData.screenName) {
+                    MergeVideoSelectScreen(
+                        mergeScreenViewModel = mergeScreenViewModel,
+                        navController = navController
+                    )
+                }
+                composable(NavigationScreenData.VideoConfigScreenData.screenName) {
+                    MergeConfigScreen(
                         mergeScreenViewModel = mergeScreenViewModel,
                         navController = navController
                     )
                 }
                 composable(NavigationScreenData.VideoMergeScreenData.screenName) {
-                    MergeTaskScreen(
-                        mergeScreenViewModel = mergeScreenViewModel,
-                        navController = navController
-                    )
+                    MergeTaskScreen()
                 }
             }
         }

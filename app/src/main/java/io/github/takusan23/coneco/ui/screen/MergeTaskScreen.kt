@@ -13,12 +13,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import androidx.work.WorkInfo
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.tool.TimeTool
 import io.github.takusan23.coneco.tool.WorkManagerTool
-import io.github.takusan23.coneco.viewmodel.MergeScreenViewModel
 import io.github.takusan23.conecocore.data.VideoMergeStatus
 
 /**
@@ -26,7 +24,7 @@ import io.github.takusan23.conecocore.data.VideoMergeStatus
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MergeTaskScreen(mergeScreenViewModel: MergeScreenViewModel, navController: NavHostController) {
+fun MergeTaskScreen() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     // WorkManagerのステータスをLiveDataで受け取る

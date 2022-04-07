@@ -7,4 +7,6 @@
     <string name="merge_edit_screen_save_folder">繋げた動画のファイル名</string>
     <string name="merge_edit_screen_audio_conf">音声の設定</string>
     <string name="merge_edit_screen_video_conf">映像の設定</string>
+    <string name="screen_title_video_source_select">繋げる動画の場所の選択</string>
+    <string name="screen_title_video_hls_select">HLSプレイリストの設定</string>
 </resources>

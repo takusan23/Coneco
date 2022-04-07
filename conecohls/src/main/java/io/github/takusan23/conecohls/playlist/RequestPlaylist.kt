@@ -4,6 +4,7 @@ import io.github.takusan23.conecohls.HttpClient
 import io.github.takusan23.conecohls.parser.PlaylistParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 /**
  * master.m3u8 playlist.m3u8 をダウンロードしてプレイリスト一覧を取得するやつ
@@ -18,7 +19,7 @@ object RequestPlaylist {
     /**
      * m3u8を解析する、プレイヤーじゃないので最低限の解析しかしない。
      *
-     * 特にエラーハンドリングとかはやってない。
+     * 失敗した場合は[IOException]を投げる
      *
      * @param m3u8Url m3u8のURL
      * @return プレイリストの中身 と m3u8を抜いたURL のPair
@@ -29,7 +30,11 @@ object RequestPlaylist {
         val playlist = response.body!!.string()
         // 絶対URLにするために先頭につけるURLを作る
         val appendUrl = PlaylistParser.createAppendUrl(m3u8Url)
-        return@withContext playlist to appendUrl
+        return@withContext if (response.isSuccessful) {
+            playlist to appendUrl
+        } else {
+            throw IOException("HTTP StatusCode：${response.code}")
+        }
     }
 
 }

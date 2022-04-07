@@ -14,12 +14,15 @@ class RequestPlaylistTest {
             if (PlaylistParser.isMultiVariantPlaylist(playlistText)) {
                 // 画質選択あり
                 val multiVariantPlaylist = PlaylistParser.parseMultiVariantPlaylist(playlistText, appendUrl)
-                val lowQualityPlaylist = multiVariantPlaylist[0]
-                println("ビットレート=${lowQualityPlaylist.bandWidth}")
-                println("プレイリストURL=${lowQualityPlaylist.url}")
-                println("---")
+                multiVariantPlaylist.forEach {
+                    println("ビットレート=${it.bandWidth}")
+                    println("解像度=${it.resolution}")
+                    println("プレイリストURL=${it.url}")
+                    println("---")
+                }
 
                 // プレイリスト取得
+                val lowQualityPlaylist = multiVariantPlaylist[0]
                 val (lowPlaylistText, lowAppendUrl) = RequestPlaylist.getPlaylist(lowQualityPlaylist.url)
                 PlaylistParser.parsePlaylist(lowPlaylistText, lowAppendUrl).forEach {
                     println(it)
@@ -37,7 +40,7 @@ class RequestPlaylistTest {
     companion object {
 
         /** マスタープレイリストのURL */
-        const val MASTER_PLAYLIST_URL = "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8"
+        const val MASTER_PLAYLIST_URL = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8"
 
         /** プレイリストのURL */
         const val PLAYLIST_URL = "http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8"

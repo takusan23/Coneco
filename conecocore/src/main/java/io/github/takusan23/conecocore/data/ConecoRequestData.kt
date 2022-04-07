@@ -22,13 +22,13 @@ data class ConecoRequestData(
 
     /** 一時保存先 */
     override val tempFolder: File
-        get() = tempFileFolder
+        get() = tempFileFolder.apply { mkdir() }
 
     /** 結合する動画 */
     override suspend fun getMergeVideoList() = videoFilePathList
 
     /** あとしまつ */
     override suspend fun release() {
-        tempFileFolder.delete()
+        tempFileFolder.deleteRecursively()
     }
 }

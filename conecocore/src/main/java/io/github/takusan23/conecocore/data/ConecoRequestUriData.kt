@@ -64,7 +64,7 @@ data class ConecoRequestUriData(
         createFileAndMoveVideoFile(tempResultFile, resultFileName)
         // 一時ファイルの削除
         mergeVideoFolder.deleteRecursively()
-        tempFileFolder.delete()
+        tempFileFolder.deleteRecursively()
         tempResultFile.delete()
     }
 

@@ -25,9 +25,9 @@ interface ConecoRequestInterface {
     val tempFolder: File
 
     /**
-     * 動画一覧のパスを返す。file://かhttps://で受け付ける。
+     * 動画一覧のパスを返す。file://かhttps://で受け付ける。複数回呼ばれるので注意してね。
      *
-     * ファイルアクセスがあるかもなんでサスペンドになってる。複数回呼ばれる。
+     * ファイルアクセスがあるかもなんでサスペンドになってる。
      * */
     suspend fun getMergeVideoList(): List<String>
 

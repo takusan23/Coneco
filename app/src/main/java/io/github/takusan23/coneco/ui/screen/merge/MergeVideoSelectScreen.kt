@@ -57,7 +57,7 @@ fun MergeVideoSelectScreen(
             // つぎボタン
             Button(
                 modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-                onClick = { navController.navigate(NavigationScreenData.VideoConfigScreenData.screenName) }
+                onClick = { navController.navigate(MergeScreenNavigationData.VideoConfigScreenData.screenName) }
             ) {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_navigate_next_24), contentDescription = null)
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))

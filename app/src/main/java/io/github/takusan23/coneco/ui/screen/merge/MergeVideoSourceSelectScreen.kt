@@ -33,7 +33,7 @@ fun MergeVideoSourceSelectScreen(navController: NavHostController) {
                             .padding(10.dp),
                         iconRes = R.drawable.ic_outline_aod_24,
                         text = "端末内の動画を繋げる",
-                        onClick = { navController.navigate(NavigationScreenData.VideoSelectScreenData.screenName) }
+                        onClick = { navController.navigate(MergeScreenNavigationData.VideoSelectScreenData.screenName) }
                     )
                     SelectButton(
                         modifier = Modifier
@@ -41,7 +41,7 @@ fun MergeVideoSourceSelectScreen(navController: NavHostController) {
                             .padding(10.dp),
                         iconRes = R.drawable.ic_outline_language_24,
                         text = "HLS形式で配信している動画を繋げる（実験的）",
-                        onClick = { navController.navigate(NavigationScreenData.VideoHlsConfigScreenData.screenName) }
+                        onClick = { navController.navigate(MergeScreenNavigationData.VideoHlsConfigScreenData.screenName) }
                     )
                 }
             }

@@ -16,24 +16,24 @@ import io.github.takusan23.coneco.R
 /**
  * アプリのタイトルバー
  *
- * @param onOpenBrowserClick ブラウザ起動ボタン押したら
  * @param title タイトル
  * @param indicatorCount ステップ数
  * @param indicatorProgress 現在のステップ
+ * @param onOpenSettingClick 設定押したとき
  * */
 @Composable
 fun ConecoAppBar(
     title: String = stringResource(id = R.string.app_name),
     indicatorProgress: Int = 0,
     indicatorCount: Int = 3,
-    onOpenBrowserClick: () -> Unit = {},
+    onOpenSettingClick: () -> Unit = {},
 ) {
     Column {
         MediumTopAppBar(
             title = { Text(text = title, fontSize = 25.sp) },
             actions = {
-                IconButton(onClick = onOpenBrowserClick) {
-                    Icon(painter = painterResource(id = R.drawable.ic_outline_open_in_browser_24), contentDescription = null)
+                IconButton(onClick = onOpenSettingClick) {
+                    Icon(painter = painterResource(id = R.drawable.ic_outline_settings_24), contentDescription = null)
                 }
             }
         )

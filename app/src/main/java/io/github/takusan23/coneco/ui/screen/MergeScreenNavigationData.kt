@@ -8,7 +8,7 @@ import io.github.takusan23.coneco.R
  * @param screenName 内部で使う名前
  * @param titleBarLabelResId タイトルバーの文言
  * */
-enum class NavigationScreenData(
+enum class MergeScreenNavigationData(
     val screenName: String,
     val titleBarLabelResId: Int,
 ) {
@@ -33,22 +33,22 @@ enum class NavigationScreenData(
         const val VIDEO_MERGE_STEP = 4
 
         /**
-         * [screenName]から[NavigationScreenData]を探して返す
+         * [screenName]から[MergeScreenNavigationData]を探して返す
          *
          * @param screenName 名前
-         * @return [NavigationScreenData]
+         * @return [MergeScreenNavigationData]
          * */
-        fun findScreenOrNull(screenName: String): NavigationScreenData? {
+        fun findScreenOrNull(screenName: String): MergeScreenNavigationData? {
             return values().firstOrNull { it.screenName == screenName }
         }
 
         /**
-         * [NavigationScreenData]から進捗状態を取得する
+         * [MergeScreenNavigationData]から進捗状態を取得する
          *
          * @param data 現在のスクリーン
          * @return 進捗
          * */
-        fun getProgress(data: NavigationScreenData): Int {
+        fun getProgress(data: MergeScreenNavigationData): Int {
             return when (data) {
                 VideoSourceSelectScreenData -> 1
                 VideoSelectScreenData, VideoHlsConfigScreenData -> 2

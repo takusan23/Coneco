@@ -70,9 +70,9 @@ fun MergeConfigScreen(
                 modifier = Modifier.align(alignment = CenterHorizontally),
                 onClick = {
                     // 画面切り替え
-                    navController.navigate(NavigationScreenData.VideoMergeScreenData.screenName, navOptions {
+                    navController.navigate(MergeScreenNavigationData.VideoMergeScreenData.screenName, navOptions {
                         // もう戻せないので終了させる
-                        popUpTo(NavigationScreenData.VideoSelectScreenData.screenName) {
+                        popUpTo(MergeScreenNavigationData.VideoSelectScreenData.screenName) {
                             inclusive = true
                         }
                     })

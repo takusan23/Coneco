@@ -78,7 +78,7 @@ fun MergeVideoHlsConfigScreen(
                     modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     onClick = {
                         // 画面切り替え
-                        navController.navigate(NavigationScreenData.VideoConfigScreenData.screenName)
+                        navController.navigate(MergeScreenNavigationData.VideoConfigScreenData.screenName)
                     }
                 ) {
                     Icon(painter = painterResource(id = R.drawable.ic_outline_navigate_next_24), contentDescription = null)

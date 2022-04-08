@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -19,17 +20,23 @@ import kotlinx.coroutines.flow.filterNotNull
 
 /**
  * 画像選択から合成までを担当する画面
+ *
+ * @param mergeScreenViewModel 共通ViewModel
+ * @param mainScreenNavigation [MainScreen]のナビゲーション
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
+fun MergeScreen(
+    mergeScreenViewModel: MergeScreenViewModel,
+    mainScreenNavigation: NavHostController,
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     // タイトルを解決するのに
-    val currentScreenEntry = navController.currentBackStackEntryAsState().value?.destination?.route ?: NavigationScreenData.VideoSelectScreenData.screenName
-    val currentNavigationScreen = NavigationScreenData.findScreenOrNull(currentScreenEntry)
+    val currentScreenEntry = navController.currentBackStackEntryAsState().value?.destination?.route ?: MergeScreenNavigationData.VideoSelectScreenData.screenName
+    val currentNavigationScreen = MergeScreenNavigationData.findScreenOrNull(currentScreenEntry)
 
     // 起動後に実行中タスクがある場合はそっちに飛ばす
     // 多重起動は想定しない（MediaCodecのデコーダー多分そんなに数が無い）
@@ -37,13 +44,13 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
         WorkManagerTool.existsRunningTask(context, lifecycleOwner)
             .filterNotNull()
             .collect {
-                val currentRoute = navController.currentBackStackEntry?.destination?.route ?: NavigationScreenData.VideoSelectScreenData.screenName
+                val currentRoute = navController.currentBackStackEntry?.destination?.route ?: MergeScreenNavigationData.VideoSelectScreenData.screenName
                 // 進捗画面にいない場合は飛ばす
-                if (NavigationScreenData.findScreenOrNull(currentRoute) != NavigationScreenData.VideoMergeScreenData) {
+                if (MergeScreenNavigationData.findScreenOrNull(currentRoute) != MergeScreenNavigationData.VideoMergeScreenData) {
                     navController.navigate(
-                        route = NavigationScreenData.VideoMergeScreenData.screenName,
+                        route = MergeScreenNavigationData.VideoMergeScreenData.screenName,
                         navOptions = navOptions {
-                            popUpTo(NavigationScreenData.VideoSourceSelectScreenData.screenName) {
+                            popUpTo(MergeScreenNavigationData.VideoSourceSelectScreenData.screenName) {
                                 // 結果的にActivity終了へ
                                 inclusive = true
                             }
@@ -57,43 +64,44 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
         topBar = {
             ConecoAppBar(
                 title = stringResource(id = currentNavigationScreen!!.titleBarLabelResId),
-                indicatorCount = NavigationScreenData.VIDEO_MERGE_STEP,
-                indicatorProgress = NavigationScreenData.getProgress(currentNavigationScreen)
+                indicatorCount = MergeScreenNavigationData.VIDEO_MERGE_STEP,
+                indicatorProgress = MergeScreenNavigationData.getProgress(currentNavigationScreen),
+                onOpenSettingClick = { mainScreenNavigation.navigate(MainScreenNavigationData.SETTING.screenName) }
             )
         },
         content = {
             // 画面切り替え
-            NavHost(navController = navController, startDestination = NavigationScreenData.VideoSourceSelectScreenData.screenName) {
-                composable(NavigationScreenData.VideoSourceSelectScreenData.screenName) {
+            NavHost(navController = navController, startDestination = MergeScreenNavigationData.VideoSourceSelectScreenData.screenName) {
+                composable(MergeScreenNavigationData.VideoSourceSelectScreenData.screenName) {
                     MergeVideoSourceSelectScreen(
                         navController = navController
                     )
                 }
-                composable(NavigationScreenData.VideoSelectScreenData.screenName) {
+                composable(MergeScreenNavigationData.VideoSelectScreenData.screenName) {
                     MergeVideoSelectScreen(
                         mergeScreenViewModel = mergeScreenViewModel,
                         navController = navController
                     )
                 }
-                composable(NavigationScreenData.VideoHlsConfigScreenData.screenName) {
+                composable(MergeScreenNavigationData.VideoHlsConfigScreenData.screenName) {
                     MergeVideoHlsConfigScreen(
                         mergeScreenViewModel = mergeScreenViewModel,
                         navController = navController
                     )
                 }
-                composable(NavigationScreenData.VideoSelectScreenData.screenName) {
+                composable(MergeScreenNavigationData.VideoSelectScreenData.screenName) {
                     MergeVideoSelectScreen(
                         mergeScreenViewModel = mergeScreenViewModel,
                         navController = navController
                     )
                 }
-                composable(NavigationScreenData.VideoConfigScreenData.screenName) {
+                composable(MergeScreenNavigationData.VideoConfigScreenData.screenName) {
                     MergeConfigScreen(
                         mergeScreenViewModel = mergeScreenViewModel,
                         navController = navController
                     )
                 }
-                composable(NavigationScreenData.VideoMergeScreenData.screenName) {
+                composable(MergeScreenNavigationData.VideoMergeScreenData.screenName) {
                     MergeTaskScreen()
                 }
             }

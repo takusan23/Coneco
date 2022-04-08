@@ -7,6 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -53,7 +54,11 @@ fun MergeVideoHlsConfigScreen(
                 if (qualityList.value != null) {
                     if (qualityList.value!!.isEmpty()) {
                         // 画質選択が不要（マスタープレイリストではなかった）
-                        Text(text = "画質選択は不要です（入力されたプレイリストには画質情報がありませんでした）")
+                        Text(
+                            modifier = Modifier.padding(10.dp),
+                            textAlign = TextAlign.Center,
+                            text = "画質選択は不要です（入力されたプレイリストには画質情報がありませんでした）"
+                        )
                     } else {
                         // 画質選んで！
                         MergeHlsQualityListConfigComponent(

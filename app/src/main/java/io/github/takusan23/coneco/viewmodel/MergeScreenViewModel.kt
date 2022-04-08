@@ -126,7 +126,12 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
      * */
     fun getHlsMasterPlaylistQualityList() {
         viewModelScope.launch {
+            val masterPlaylist = ConecoRequestHlsData.getMasterPlaylist(hlsMasterPlaylistUrl.value)
             _hlsQualityList.value = ConecoRequestHlsData.getMasterPlaylist(hlsMasterPlaylistUrl.value) ?: emptyList()
+            // マスタープレイリストじゃない場合はプレイリストとして登録する
+            if (masterPlaylist == null) {
+                _hlsPlaylistUrl.value = hlsMasterPlaylistUrl.value
+            }
         }
     }
 
@@ -138,10 +143,12 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .addTag(VideoMergeWork.WORKER_TAG)
             .setInputData(workDataOf(
+                // 結合する動画のURI配列。空っぽならnull
+                VideoMergeWork.MERGE_URI_LIST_KEY to selectedVideoList.value.ifEmpty { null },
+                // 結合する動画のHLSプレイリストURL。ない場合は URI配列 のほうが使われる
+                VideoMergeWork.MERGE_HLS_PLAYLIST_URL_KEY to hlsPlaylistUrl.value,
                 // 保存先
                 VideoMergeWork.RESULT_FILE_NAME to resultFileName.value,
-                // 結合する動画のURI配列
-                VideoMergeWork.MERGE_URI_LIST_KEY to selectedVideoList.value.map { it.uri.toString() }.toTypedArray(),
                 // 音声設定
                 VideoMergeWork.AUDIO_CONF_DATA_KEY to SerializationTool.convertString(audioMergeEditData.value),
                 // 映像設定

@@ -43,7 +43,7 @@ fun MergeScreen(mergeScreenViewModel: MergeScreenViewModel) {
                     navController.navigate(
                         route = NavigationScreenData.VideoMergeScreenData.screenName,
                         navOptions = navOptions {
-                            popUpTo(NavigationScreenData.VideoSelectScreenData.screenName) {
+                            popUpTo(NavigationScreenData.VideoSourceSelectScreenData.screenName) {
                                 // 結果的にActivity終了へ
                                 inclusive = true
                             }

@@ -10,7 +10,7 @@ import java.io.File
 interface ConecoRequestInterface {
 
     /** 一時音声ファイル保存先、一旦すべてのファイルをデコードして一つのファイルにする */
-    val tempRawAudioFile get() = File(tempFolder, TEMP_RAW_VIDEO_FILE)
+    val tempRawAudioFile get() = File(tempFolder, TEMP_RAW_AUDIO_FILE)
 
     /** 一時音声ファイル保存先 */
     val tempAudioFile get() = File(tempFolder, TEMP_AUDIO_FILE)
@@ -39,7 +39,7 @@ interface ConecoRequestInterface {
         const val TEMP_VIDEO_FILE = "temp_video_file"
 
         /** 一時音声ファイル保存先、一旦すべてのファイルをデコードして一つのファイルにする */
-        const val TEMP_RAW_VIDEO_FILE = "temp_raw_video_file"
+        const val TEMP_RAW_AUDIO_FILE = "temp_raw_audio_file"
 
         /** 一時音声ファイル保存先 */
         const val TEMP_AUDIO_FILE = "temp_audio_file"

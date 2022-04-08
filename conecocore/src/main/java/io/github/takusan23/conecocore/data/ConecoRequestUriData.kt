@@ -4,10 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
-import androidx.core.content.contentValuesOf
 import io.github.takusan23.conecocore.ConecoCore
 import io.github.takusan23.conecocore.data.ConecoRequestUriData.Companion.resultFileFolder
+import io.github.takusan23.conecocore.tool.MediaStoreTool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -25,8 +24,8 @@ import java.io.File
 data class ConecoRequestUriData(
     val context: Context,
     val videoUriList: List<Uri>,
-    val folderName: String = "Coneco",
     val resultFileName: String,
+    val folderName: String = "Coneco",
     val tempFileFolder: File,
 ) : ConecoRequestInterface {
 
@@ -61,7 +60,7 @@ data class ConecoRequestUriData(
     /** あとしまつ */
     override suspend fun release() {
         // tempResultFile を MediaStore へ登録する
-        createFileAndMoveVideoFile(tempResultFile, resultFileName)
+        MediaStoreTool.copyDeviceMovieFolder(context, tempResultFile, folderName, resultFileName)
         // 一時ファイルの削除
         mergeVideoFolder.deleteRecursively()
         tempFileFolder.deleteRecursively()
@@ -85,32 +84,6 @@ data class ConecoRequestUriData(
         }
     }
 
-    /**
-     * 結合したファイルを端末のギャラリー（Movie）に入れる。
-     *
-     * くそみたいな MediaStore API を叩く必要がある。
-     *
-     * @param fileName ファイル名
-     * */
-    @Suppress("BlockingMethodInNonBlockingContext")
-    private suspend fun createFileAndMoveVideoFile(moveFile: File, fileName: String) = withContext(Dispatchers.IO) {
-        val contentResolver = context.contentResolver
-        // MediaStoreに入れる中身
-        val contentValues = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            contentValuesOf(
-                MediaStore.MediaColumns.DISPLAY_NAME to fileName,
-                MediaStore.MediaColumns.RELATIVE_PATH to resultFileFolder(folderName)
-            )
-        } else {
-            contentValuesOf(MediaStore.MediaColumns.DISPLAY_NAME to fileName)
-        }
-        val uri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)!!
-        val outputStream = contentResolver.openOutputStream(uri)!!
-        outputStream.write(moveFile.readBytes())
-        moveFile.delete()
-    }
-
-
     companion object {
         /** Storage Access FrameworkでもらったUriをコピーする先 */
         private const val MERGE_ITEM_FOLDER = "merge_videos"
@@ -123,7 +96,7 @@ data class ConecoRequestUriData(
          *
          * @param folderName フォルダ名
          * */
-        fun resultFileFolder(folderName: String) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        fun resultFileFolder(folderName: String): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // MediaStore.MediaColumns.RELATIVE_PATH が Android10 以降のみ
             "${Environment.DIRECTORY_MOVIES}/$folderName"
         } else {

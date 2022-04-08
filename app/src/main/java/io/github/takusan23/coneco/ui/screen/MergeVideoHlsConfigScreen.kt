@@ -73,7 +73,7 @@ fun MergeVideoHlsConfigScreen(
                 }
             }
             // 結合する
-            if (qualityList.value != null) {
+            if (hlsPlaylistUrl.value != null) {
                 Button(
                     modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     onClick = {

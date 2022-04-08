@@ -14,6 +14,7 @@ import io.github.takusan23.coneco.tool.SerializationTool
 import io.github.takusan23.conecocore.ConecoCore
 import io.github.takusan23.conecocore.data.ConecoRequestUriData
 import io.github.takusan23.conecocore.data.VideoMergeStatus
+import io.github.takusan23.conecohls.data.ConecoRequestHlsData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -60,20 +61,33 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
      * @return 結合にかかった時間
      * */
     private suspend fun startMerge() = withContext(Dispatchers.Default) {
+        // Uriの配列かプレイリストのURLどっちかがnullじゃない
+        val mergeUriList = inputData.getStringArray(MERGE_URI_LIST_KEY)?.map { it.toUri() }
+        val hlsPlaylistUrl = inputData.getString(MERGE_HLS_PLAYLIST_URL_KEY)
         // 各データを取り出す
         val fileName = inputData.getString(RESULT_FILE_NAME)!!
-        val mergeUriList = inputData.getStringArray(MERGE_URI_LIST_KEY)?.map { it.toUri() }!!
         val audioConfData = inputData.getString(AUDIO_CONF_DATA_KEY)!!.let { SerializationTool.convertDataClass<AudioConfData>(it) }
         val videoConfData = inputData.getString(VIDEO_CONF_DATA_KEY)!!.let { SerializationTool.convertDataClass<VideoConfData>(it) }
         val tempFolder = File(appContext.getExternalFilesDir(null), TEMP_FILE_FOLDER)
         // ライブラリ側でUriとFileの差分を吸収するように
-        val requestData = ConecoRequestUriData(
-            context = appContext,
-            videoUriList = mergeUriList,
-            folderName = MEDIA_STORE_FOLDER_NAME,
-            resultFileName = fileName,
-            tempFileFolder = tempFolder
-        )
+        val requestData = if (mergeUriList != null) {
+            // Uri配列
+            ConecoRequestUriData(
+                context = appContext,
+                videoUriList = mergeUriList,
+                folderName = MEDIA_STORE_FOLDER_NAME,
+                resultFileName = fileName,
+                tempFileFolder = tempFolder
+            )
+        } else {
+            // HLSプレイリストURL
+            ConecoRequestHlsData(
+                context = appContext,
+                m3u8PlaylistUrl = hlsPlaylistUrl!!,
+                resultFileName = fileName,
+                tempFileFolder = tempFolder
+            )
+        }
         // 作ったライブラリを利用して合成する
         conecoCore = ConecoCore(requestData).apply {
             configureAudioFormat(audioConfData.bitRate)
@@ -140,8 +154,14 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         /** つなげたファイルの名前 */
         const val RESULT_FILE_NAME = "io.github.takusan23.coneco.workmanager.VideoMergeWork.RESULT_FILE_NAME"
 
-        /** 結合する動画のURI配列 */
+        /** 繋げる動画のURI配列 */
         const val MERGE_URI_LIST_KEY = "io.github.takusan23.coneco.workmanager.VideoMergeWork.MERGE_URI_LIST_KEY"
+
+        /**
+         * 繋げる動画がHLSで来ている場合はプレイリストファイルのURL。
+         * [MERGE_URI_LIST_KEY]とこっちどっちか利用できます。(排他仕様)
+         */
+        const val MERGE_HLS_PLAYLIST_URL_KEY = "io.github.takusan23.coneco.workmanager.VideoMergeWork.MERGE_HLS_PLAYLIST_URL_KEY"
 
         /** 音声の設定 */
         const val AUDIO_CONF_DATA_KEY = "io.github.takusan23.coneco.workmanager.VideoMergeWork.AUDIO_CONF_DATA_KEY"

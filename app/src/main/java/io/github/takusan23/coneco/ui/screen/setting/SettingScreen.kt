@@ -19,7 +19,7 @@ fun SettingScreen() {
             LicenseScreen()
         }
         composable(SettingScreenNavigationData.KONO_APP.screenName) {
-
+            KonoAppScreen()
         }
     }
 }

@@ -5,31 +5,39 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import io.github.takusan23.coneco.R
+import io.github.takusan23.coneco.ui.component.BackArrowTopAppBar
 import io.github.takusan23.coneco.ui.component.KonoAppCard
 import io.github.takusan23.coneco.ui.component.KonoAppLibraryCard
 
 /**
  * このアプリについて 画面
+ *
+ * @param onBack 画面戻ってほしいときに呼ばれる
  * */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KonoAppScreen() {
+fun KonoAppScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val version = remember { mutableStateOf(context.packageManager.getPackageInfo(context.packageName, 0).versionName) }
 
-    Scaffold(topBar = { MediumTopAppBar(title = { Text(text = "このアプリについて", fontSize = 25.sp) }) }) {
+    Scaffold(
+        topBar = {
+            BackArrowTopAppBar(
+                title = "このアプリについて",
+                iconRes = R.drawable.ic_outline_arrow_back_24,
+                onBack = onBack
+            )
+        }
+    ) {
         Column {
 
             KonoAppCard(

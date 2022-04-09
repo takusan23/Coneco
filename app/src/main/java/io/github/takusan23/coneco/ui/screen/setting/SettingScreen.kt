@@ -16,10 +16,10 @@ fun SettingScreen() {
             SettingMasterScreen(onNavigation = { settingNavigation.navigate(it) })
         }
         composable(SettingScreenNavigationData.LICENSE.screenName) {
-            LicenseScreen()
+            LicenseScreen(onBack = { settingNavigation.popBackStack() })
         }
         composable(SettingScreenNavigationData.KONO_APP.screenName) {
-            KonoAppScreen()
+            KonoAppScreen(onBack = { settingNavigation.popBackStack() })
         }
     }
 }

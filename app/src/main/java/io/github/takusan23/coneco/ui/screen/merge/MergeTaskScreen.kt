@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +56,7 @@ fun MergeTaskScreen() {
                     )
                     Text(
                         modifier = Modifier.padding(5.dp),
-                        text = workStatus.value.name
+                        text = workStatus.value.toLocaleString()
                     )
                     // 終了ボタン
                     Button(
@@ -65,12 +66,12 @@ fun MergeTaskScreen() {
                     ) {
                         Icon(painter = painterResource(id = R.drawable.ic_outline_clear_24), contentDescription = null)
                         Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(text = "強制終了")
+                        Text(text = stringResource(id = R.string.merge_video_merge_force_stop))
                     }
                 } else {
                     Text(
                         modifier = Modifier.padding(5.dp),
-                        text = "終了です"
+                        text = stringResource(id = R.string.merge_video_merge_finish)
                     )
                     // 合計時間
                     if (totalMergeTime.value > 0) {
@@ -78,7 +79,7 @@ fun MergeTaskScreen() {
                             modifier = Modifier.padding(5.dp),
                             textAlign = TextAlign.Center,
                             text = """
-                                合計時間：${TimeTool.millSecToFormat(totalMergeTime.value)}
+                                ${stringResource(id = R.string.merge_video_merge_total_time)}：${TimeTool.millSecToFormat(totalMergeTime.value)}
                                 (${totalMergeTime.value} ms)
                             """.trimIndent()
                         )
@@ -86,6 +87,15 @@ fun MergeTaskScreen() {
                 }
             }
         }
+    }
+}
+
+/**
+ * 進捗状況、ローカライズ版
+ * */
+private fun VideoMergeStatus.toLocaleString(): String {
+    return when (this) {
+        else -> this.name
     }
 }
 
@@ -117,7 +127,7 @@ private fun MergeTaskScreenHeader() {
     ) {
         Text(
             modifier = Modifier.padding(5.dp),
-            text = "動画を繋げています",
+            text = stringResource(id = R.string.merge_video_merge_subtitle),
             fontSize = 20.sp
         )
     }

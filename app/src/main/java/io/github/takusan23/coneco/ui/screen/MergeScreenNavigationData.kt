@@ -16,16 +16,16 @@ enum class MergeScreenNavigationData(
     VideoSourceSelectScreenData("video_source_select_select", R.string.screen_title_video_source_select),
 
     /** 動画選択画面 */
-    VideoSelectScreenData("video_select_screen", R.string.screen_title_video_select),
+    VideoSelectScreenData("video_select_screen", R.string.merge_video_source_select_title),
 
     /** HLSのアドレスと画質選択画面 */
-    VideoHlsConfigScreenData("video_hls_config_screen", R.string.screen_title_video_hls_select),
+    VideoHlsConfigScreenData("video_hls_config_screen", R.string.merge_video_hls_config_title),
 
     /** 動画情報編集画面 */
-    VideoConfigScreenData("video_config_screen", R.string.screen_title_video_edit),
+    VideoConfigScreenData("video_config_screen", R.string.merge_video_edit_title),
 
     /** 結合画面 */
-    VideoMergeScreenData("video_merge_screen", R.string.screen_title_video_merge);
+    VideoMergeScreenData("video_merge_screen", R.string.merge_video_merge_title);
 
     companion object {
 

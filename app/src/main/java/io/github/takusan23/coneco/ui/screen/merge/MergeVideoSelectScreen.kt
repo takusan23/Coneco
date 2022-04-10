@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -61,7 +62,7 @@ fun MergeVideoSelectScreen(
             ) {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_navigate_next_24), contentDescription = null)
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "動画の情報設定")
+                Text(text = stringResource(id = R.string.merge_video_select_next))
             }
         }
     }
@@ -81,7 +82,7 @@ private fun SelectScreenHeader(onPickerOpenClick: () -> Unit) {
     ) {
         Text(
             modifier = Modifier.padding(5.dp),
-            text = "結合したい動画を選んでください。",
+            text = stringResource(id = R.string.merge_video_select_subtitle),
             fontSize = 20.sp
         )
         // 選択ボタン
@@ -93,7 +94,7 @@ private fun SelectScreenHeader(onPickerOpenClick: () -> Unit) {
         ) {
             Icon(painter = painterResource(id = R.drawable.ic_outline_video_file_24), contentDescription = null)
             Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = "動画を選択")
+            Text(text = stringResource(id = R.string.merge_video_select_add_video))
         }
     }
 }

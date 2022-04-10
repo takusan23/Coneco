@@ -2,8 +2,9 @@ package io.github.takusan23.coneco.ui.screen.setting
 
 import android.content.Context
 import android.content.Intent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,11 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.ui.component.BackArrowTopAppBar
 import io.github.takusan23.coneco.ui.component.KonoAppCard
+import io.github.takusan23.coneco.ui.component.KonoAppHeader
 import io.github.takusan23.coneco.ui.component.KonoAppLibraryCard
 
 /**
@@ -32,41 +35,43 @@ fun KonoAppScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             BackArrowTopAppBar(
-                title = "このアプリについて",
+                title = stringResource(id = R.string.setting_konoapp_title),
                 iconRes = R.drawable.ic_outline_arrow_back_24,
                 onBack = onBack
             )
         }
     ) {
-        Column {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            KonoAppHeader(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.size(20.dp))
 
             KonoAppCard(
                 modifier = Modifier.padding(5.dp),
                 iconRes = R.drawable.ic_outline_settings_24,
-                label = "バージョン",
+                label = stringResource(id = R.string.setting_konoapp_version),
                 description = version.value,
                 onClick = { version.value += ".0" }
             )
             KonoAppCard(
                 modifier = Modifier.padding(5.dp),
                 iconRes = R.drawable.ic_outline_account_box_24,
-                label = "何かあれば - Twitter",
+                label = stringResource(id = R.string.setting_konoapp_contact),
                 description = TwitterId,
                 onClick = { openBrowser(context, TwitterUrl) }
             )
             KonoAppCard(
                 modifier = Modifier.padding(5.dp),
                 iconRes = R.drawable.ic_outline_code_24,
-                label = "ソースコード - GitHub",
+                label = stringResource(id = R.string.setting_konoapp_source_code),
                 description = "takusan23/Coneco",
                 onClick = { openBrowser(context, GitHubUrl) }
             )
 
             KonoAppLibraryCard(
                 modifier = Modifier.padding(5.dp),
-                libTitle = "動画をつなげるコアの部分はライブラリとして独立してます。GitHubから見れます。",
-                coreText = "複数の動画を繋げるライブラリ。いまいちよく分かっていない。",
-                hlsText = "conecocoreへHLSで配信されている動画も扱えるようにしたもの。",
+                libTitle = stringResource(id = R.string.setting_konoapp_lib_title),
+                coreText = stringResource(id = R.string.setting_konoapp_lib_core_title),
+                hlsText = stringResource(id = R.string.setting_konoapp_lib_hls_title),
                 onCoreLibClick = { openBrowser(context, CoreLibGitHubUrl) },
                 onHlsLibClick = { openBrowser(context, HlsLibGitHubUrl) }
             )

@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.coneco.R
@@ -22,16 +23,16 @@ import io.github.takusan23.coneco.ui.component.BackArrowTopAppBar
 @Composable
 fun LicenseScreen(onBack: () -> Unit) {
     val licenseList = listOf(
+        conecoCore,
         coroutine,
         serialization,
         okhttp,
-        conecoCore,
         materialIcon
     )
     Scaffold(
         topBar = {
             BackArrowTopAppBar(
-                title = "ライセンス",
+                title = stringResource(id = R.string.setting_license_title),
                 iconRes = R.drawable.ic_outline_arrow_back_24,
                 onBack = onBack
             )
@@ -128,7 +129,7 @@ private val okhttp = LicenseData("square/okhttp", """
    limitations under the License.
 """.trimIndent())
 
-private val materialIcon = LicenseData("","""
+private val materialIcon = LicenseData("google/material-design-icons", """
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at

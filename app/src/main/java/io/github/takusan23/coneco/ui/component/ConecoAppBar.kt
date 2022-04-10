@@ -4,7 +4,10 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,13 +32,20 @@ fun ConecoAppBar(
     onOpenSettingClick: () -> Unit = {},
 ) {
     Column {
-        MediumTopAppBar(
-            title = { Text(text = title, fontSize = 25.sp) },
-            actions = {
-                IconButton(onClick = onOpenSettingClick) {
-                    Icon(painter = painterResource(id = R.drawable.ic_outline_settings_24), contentDescription = null)
-                }
+        Row(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            IconButton(onClick = onOpenSettingClick) {
+                Icon(painter = painterResource(id = R.drawable.ic_outline_settings_24), contentDescription = null)
             }
+        }
+        Text(
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+            text = title,
+            fontSize = 25.sp
         )
         // 各ステップを表示するインジケーター
         TitleBarIndicator(

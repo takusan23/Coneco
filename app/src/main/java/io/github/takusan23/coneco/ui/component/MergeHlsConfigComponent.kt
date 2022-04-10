@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +53,7 @@ fun MergeHlsPlaylistUrlConfigComponent(
                 .padding(10.dp)
         ) {
             Text(
-                text = "HLSのプレイリスト・マニフェスト（m3u8）のURLを入力してください",
+                text = stringResource(id = R.string.merge_video_hls_config_url_message),
                 fontSize = 18.sp,
             )
             OutlinedTextField(
@@ -61,7 +62,7 @@ fun MergeHlsPlaylistUrlConfigComponent(
                     .padding(5.dp)
                     .focusRequester(focusRequester),
                 value = m3u8Url,
-                label = { Text(text = "m3u8のURL") },
+                label = { Text(text = stringResource(id = R.string.merge_video_hls_config_url_label)) },
                 maxLines = 1,
                 singleLine = true,
                 onValueChange = onM3u8UrlChange
@@ -70,7 +71,7 @@ fun MergeHlsPlaylistUrlConfigComponent(
                 modifier = Modifier.align(alignment = Alignment.End),
                 onClick = onRequestClick
             ) {
-                Text(text = "画質一覧を取得")
+                Text(text = stringResource(id = R.string.merge_video_hls_config_url_button))
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Icon(painter = painterResource(id = R.drawable.ic_outline_language_24), contentDescription = null)
             }
@@ -94,9 +95,7 @@ fun MergeHlsQualityListConfigComponent(
     onClick: (MultiVariantPlaylist) -> Unit,
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(5.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.primaryContainer
     ) {
@@ -112,25 +111,22 @@ fun MergeHlsQualityListConfigComponent(
                 )
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "利用可能な画質",
+                    text = stringResource(id = R.string.merge_video_hls_config_quality_list_title),
                     fontSize = 18.sp,
                 )
 
             }
-            LazyColumn(
-                modifier = modifier,
-                content = {
-                    items(list) { item ->
-                        HlsQualityListItem(
-                            modifier = Modifier.padding(start = 5.dp, end = 5.dp),
-                            data = item,
-                            onClick = onClick,
-                            isChecked = item.url == selectUrl
-                        )
-                        Divider(modifier = Modifier.padding(start = 5.dp, end = 5.dp))
-                    }
+            LazyColumn {
+                items(list) { item ->
+                    HlsQualityListItem(
+                        modifier = Modifier.padding(start = 5.dp, end = 5.dp),
+                        data = item,
+                        onClick = onClick,
+                        isChecked = item.url == selectUrl
+                    )
+                    Divider(modifier = Modifier.padding(start = 5.dp, end = 5.dp))
                 }
-            )
+            }
         }
     }
 }
@@ -161,19 +157,19 @@ private fun HlsQualityListItem(
                 if (data.resolution != null) {
                     Text(
                         modifier = Modifier.padding(3.dp),
-                        text = "解像度：${data.resolution}",
+                        text = "${stringResource(id = R.string.merge_video_hls_config_quality_list_resolution)}：${data.resolution}",
                         fontSize = 20.sp
                     )
                 }
                 if (data.bandWidth != null) {
                     Text(
                         modifier = Modifier.padding(3.dp),
-                        text = "ビットレート、帯域幅：${data.bandWidth}",
+                        text = "${stringResource(id = R.string.merge_video_hls_config_quality_list_bitrate)}：${data.bandWidth}",
                     )
                 }
                 Text(
                     modifier = Modifier.padding(3.dp),
-                    text = "プレイリスト URL：${data.url}",
+                    text = "${stringResource(id = R.string.merge_video_hls_config_quality_list_playlist)}：${data.url}",
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                 )

@@ -122,17 +122,16 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         maxStep: Int = 0,
         progress: Int = 0,
     ): ForegroundInfo {
-        val channelId = "video_merge_task_notification"
-        val channel = NotificationChannelCompat.Builder(channelId, NotificationManagerCompat.IMPORTANCE_LOW).apply {
-            setName("動画を繋げる作業中通知")
+        val channel = NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW).apply {
+            setName(appContext.getString(R.string.notification_video_merge_channel_name))
         }.build()
         // 通知ちゃんねるがない場合は作成
-        if (notificationManager.getNotificationChannel(channelId) == null) {
+        if (notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
             notificationManager.createNotificationChannel(channel)
         }
-        val notification = NotificationCompat.Builder(appContext, channelId).apply {
-            setContentTitle("動画を繋げています")
-            setContentText("アプリで進捗を確認できます。")
+        val notification = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID).apply {
+            setContentTitle(appContext.getString(R.string.notification_video_merge_title))
+            setContentText(appContext.getString(R.string.notification_video_merge_subtitle))
             setSmallIcon(R.drawable.ic_outline_videocam_24)
             // プログレスバー
             if (progress > 0.0f) {
@@ -141,12 +140,15 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
             // 再表示用PendingIntent
             setContentIntent(MainActivity.createMainActivityPendingIntent(applicationContext))
             // キャンセル用PendingIntent
-            addAction(R.drawable.ic_outline_clear_24, "中止する", WorkManager.getInstance(applicationContext).createCancelPendingIntent(id))
+            addAction(R.drawable.ic_outline_clear_24, appContext.getString(R.string.merge_video_merge_force_stop), WorkManager.getInstance(applicationContext).createCancelPendingIntent(id))
         }.build()
         return ForegroundInfo(NOTIFICATION_ID, notification)
     }
 
     companion object {
+
+        /** 通知チャンネルのID */
+        const val NOTIFICATION_CHANNEL_ID = "video_merge_task_notification"
 
         /** WorkManagerに指定しておくタグ */
         const val WORKER_TAG = "io.github.takusan23.coneco.workmanager.VideoMergeWork.VIDEO_MERGE_WORK"

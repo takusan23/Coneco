@@ -1,16 +1,20 @@
 package io.github.takusan23.coneco.ui.component
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.takusan23.coneco.R
@@ -83,9 +87,10 @@ fun KonoAppLibraryCard(
     Surface(
         modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primaryContainer),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(20.dp),
+        contentColor = contentColorFor(MaterialTheme.colorScheme.primaryContainer),
     ) {
-        Column() {
+        Column {
             Row(
                 modifier = Modifier.padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -119,6 +124,51 @@ fun KonoAppLibraryCard(
                     onClick = onHlsLibClick
                 )
             }
+        }
+    }
+}
+
+/**
+ * このアプリについて ヘッター部
+ *
+ * 押したら色が変わるよ
+ *
+ * @param modifier [Modifier]
+ * */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun KonoAppHeader(modifier: Modifier = Modifier) {
+    val colorList = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.tertiary,
+    )
+    val currentIconColor = remember { mutableStateOf(colorList.random()) }
+    val colorAnim = animateColorAsState(targetValue = currentIconColor.value)
+
+    Surface(
+        modifier = modifier,
+        color = Color.Transparent,
+        shape = RoundedCornerShape(20.dp),
+        onClick = { currentIconColor.value = colorList.random() }
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(10.dp),
+                painter = painterResource(id = R.drawable.coneco_android),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(colorAnim.value)
+            )
+            Text(
+                text = stringResource(id = R.string.app_name),
+                fontSize = 20.sp,
+                color = colorAnim.value
+            )
         }
     }
 }

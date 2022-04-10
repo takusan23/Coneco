@@ -33,11 +33,14 @@ fun MainScreen(mergeScreenViewModel: MergeScreenViewModel) {
             NavHost(navController = mainScreenNavigation, startDestination = MainScreenNavigationData.MERGE_SCREEN.screenName) {
                 // 合成画面、この中の画面でナビゲーションがある
                 composable(MainScreenNavigationData.MERGE_SCREEN.screenName) {
-                    MergeScreen(mergeScreenViewModel, mainScreenNavigation)
+                    MergeScreen(
+                        mergeScreenViewModel = mergeScreenViewModel,
+                        mainScreenNavigation = mainScreenNavigation
+                    )
                 }
                 // 設定画面
                 composable(MainScreenNavigationData.SETTING.screenName) {
-                    SettingScreen()
+                    SettingScreen(onBack = { mainScreenNavigation.popBackStack() })
                 }
             }
         }

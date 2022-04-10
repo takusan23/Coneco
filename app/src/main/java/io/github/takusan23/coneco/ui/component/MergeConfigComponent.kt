@@ -52,7 +52,7 @@ fun MergeResultFileNameConfigComponent(
                     .focusRequester(focusRequester)
                     .fillMaxWidth(),
                 value = fileName,
-                label = { Text(text = "繋げた動画のファイル名") },
+                label = { Text(text = stringResource(id = R.string.merge_video_config_file_name_hint)) },
                 onValueChange = { onFileNameChange(it) }
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -65,7 +65,7 @@ fun MergeResultFileNameConfigComponent(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = """
-                    保存先は以下になります：
+                    ${stringResource(id = R.string.merge_video_config_file_name_save_folder)}：
                     ${VideoMergeWork.resultMovieSaveFolder}
                     """.trimIndent()
                 )
@@ -101,7 +101,7 @@ fun MergeAudioConfigComponent(
             initialNum = (data.bitRate / 1000),
             label = {
                 Text(
-                    text = "音声のビットレート (単位 : K)",
+                    text = stringResource(id = R.string.merge_video_config_audio_bitrate),
                     maxLines = 1
                 )
             },
@@ -136,7 +136,7 @@ fun MergeVideoConfigComponent(
                     .fillMaxWidth(),
                 label = {
                     Text(
-                        text = "映像のビットレート (単位 : K)",
+                        text = stringResource(id = R.string.merge_video_config_video_bitrate),
                         maxLines = 1
                     )
                 },
@@ -149,7 +149,7 @@ fun MergeVideoConfigComponent(
                     .fillMaxWidth(),
                 label = {
                     Text(
-                        text = "フレームレート (fps)",
+                        text = stringResource(id = R.string.merge_video_config_video_framerate),
                         maxLines = 1
                     )
                 },
@@ -166,7 +166,7 @@ fun MergeVideoConfigComponent(
                     initialNum = data.videoHeight,
                     label = {
                         Text(
-                            text = "縦のサイズ (空白でも可)",
+                            text = stringResource(id = R.string.merge_video_config_video_height),
                             maxLines = 1
                         )
                     },
@@ -180,7 +180,7 @@ fun MergeVideoConfigComponent(
                     initialNum = data.videoWidth,
                     label = {
                         Text(
-                            text = "横のサイズ (空白でも可)",
+                            text = stringResource(id = R.string.merge_video_config_video_width),
                             maxLines = 1
                         )
                     },
@@ -189,16 +189,9 @@ fun MergeVideoConfigComponent(
             }
             // OpenGLモードを使う。他の動画とサイズが違う場合は利用する必要あり
             AndroidSnowConeSwitch(
-                modifier = Modifier
-                    .padding(5.dp),
+                modifier = Modifier.padding(5.dp),
                 isEnable = data.isUseOpenGl,
-                label = {
-                    Text(text = """
-                        OpenGLモードを利用して結合する。
-                        (繋げる動画が同じ形式じゃない場合は有効にしてください、実験的機能です。)
-                        """.trimIndent()
-                    )
-                },
+                label = { Text(text = stringResource(id = R.string.merge_video_config_use_opengl)) },
                 onValueChange = { onDataChange(data.copy(isUseOpenGl = it)) }
             )
         }

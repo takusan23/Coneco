@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -82,7 +83,7 @@ fun MergeConfigScreen(
             ) {
                 Icon(painter = painterResource(id = R.drawable.ic_outline_navigate_next_24), contentDescription = null)
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = "動画を繋げる")
+                Text(text = stringResource(id = R.string.merge_video_config_next))
             }
         }
     }
@@ -101,7 +102,7 @@ private fun MergeEditScreenHeader() {
     ) {
         Text(
             modifier = Modifier.padding(5.dp),
-            text = "動画の情報を編集します",
+            text = stringResource(id = R.string.merge_video_config_subtitle),
             fontSize = 20.sp
         )
     }

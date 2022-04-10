@@ -89,12 +89,6 @@ fun MergeScreen(
                         navController = navController
                     )
                 }
-                composable(MergeScreenNavigationData.VideoSelectScreenData.screenName) {
-                    MergeVideoSelectScreen(
-                        mergeScreenViewModel = mergeScreenViewModel,
-                        navController = navController
-                    )
-                }
                 composable(MergeScreenNavigationData.VideoConfigScreenData.screenName) {
                     MergeConfigScreen(
                         mergeScreenViewModel = mergeScreenViewModel,

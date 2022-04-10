@@ -1,5 +1,6 @@
 package io.github.takusan23.coneco.tool
 
+import android.text.format.DateUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -12,8 +13,6 @@ object TimeTool {
      *
      * @param ms ミリ秒
      * */
-    fun millSecToFormat(ms: Long): String {
-        return SimpleDateFormat.format(ms)
-    }
+    fun millSecToFormat(ms: Long) = DateUtils.formatElapsedTime(ms / 1000L)
 
 }

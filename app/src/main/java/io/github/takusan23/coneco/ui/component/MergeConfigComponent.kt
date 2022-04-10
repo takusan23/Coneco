@@ -52,6 +52,8 @@ fun MergeResultFileNameConfigComponent(
                     .focusRequester(focusRequester)
                     .fillMaxWidth(),
                 value = fileName,
+                maxLines = 1,
+                singleLine = true,
                 label = { Text(text = stringResource(id = R.string.merge_video_config_file_name_hint)) },
                 onValueChange = { onFileNameChange(it) }
             )

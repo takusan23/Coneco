@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.workmanager.VideoMergeWork
 import io.github.takusan23.conecocore.data.VideoMergeStatus
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +12,23 @@ import kotlinx.coroutines.flow.StateFlow
 
 /** WorkManager 関係のユーティリティクラス */
 object WorkManagerTool {
+
+    /**
+     * 進捗状況をローカライズして返す
+     *
+     * @param context [Context]
+     * @param status [VideoMergeStatus]
+     * */
+    fun workStatusToLocalize(context: Context, status: VideoMergeStatus): String {
+        return when (status) {
+            VideoMergeStatus.NO_TASK -> context.getString(R.string.merge_video_merge_status_finish)
+            VideoMergeStatus.VIDEO_MERGE -> context.getString(R.string.merge_video_merge_status_video)
+            VideoMergeStatus.AUDIO_MERGE -> context.getString(R.string.merge_video_merge_status_audio)
+            VideoMergeStatus.CONCAT -> context.getString(R.string.merge_video_merge_status_concat)
+            VideoMergeStatus.CLEANUP -> context.getString(R.string.merge_video_merge_status_cleanup)
+            VideoMergeStatus.FINISH -> context.getString(R.string.merge_video_merge_status_finish)
+        }
+    }
 
     /**
      * 実行中タスクがあるかどうかを返す

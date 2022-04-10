@@ -53,4 +53,9 @@
     <string name="setting_konoapp_lib_title">動画をつなげるコアの部分はライブラリとして独立してます。GitHubから見れます。</string>
     <string name="setting_konoapp_lib_core_title">複数の動画を繋げるライブラリ。いまいちよく分かっていない。</string>
     <string name="setting_konoapp_lib_hls_title">conecocoreへHLSで配信されている動画を扱えるようにしたもの。</string>
+    <string name="merge_video_merge_status_video">映像の結合中</string>
+    <string name="merge_video_merge_status_audio">音声の結合中</string>
+    <string name="merge_video_merge_status_concat">映像と音声の結合中</string>
+    <string name="merge_video_merge_status_cleanup">クリーンアップ中</string>
+    <string name="merge_video_merge_status_finish">終了</string>
 </resources>

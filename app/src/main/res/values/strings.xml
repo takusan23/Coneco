@@ -52,4 +52,9 @@
     <string name="setting_konoapp_lib_title">The core part that connects the videos is independent as a library. You can see it from GitHub.</string>
     <string name="setting_konoapp_lib_core_title">A library that connects multiple videos. I\'m not sure.</string>
     <string name="setting_konoapp_lib_hls_title">It is possible to handle videos distributed by HLS to conecocore.</string>
+    <string name="merge_video_merge_status_video">Combining videos</string>
+    <string name="merge_video_merge_status_audio">During audio combination</string>
+    <string name="merge_video_merge_status_concat">Combining video and audio</string>
+    <string name="merge_video_merge_status_cleanup">Cleaning up</string>
+    <string name="merge_video_merge_status_finish">end</string>
 </resources>

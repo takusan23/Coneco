@@ -56,7 +56,7 @@ fun MergeTaskScreen() {
                     )
                     Text(
                         modifier = Modifier.padding(5.dp),
-                        text = workStatus.value.toLocaleString()
+                        text = WorkManagerTool.workStatusToLocalize(context, workStatus.value)
                     )
                     // 終了ボタン
                     Button(
@@ -87,15 +87,6 @@ fun MergeTaskScreen() {
                 }
             }
         }
-    }
-}
-
-/**
- * 進捗状況、ローカライズ版
- * */
-private fun VideoMergeStatus.toLocaleString(): String {
-    return when (this) {
-        else -> this.name
     }
 }
 

@@ -11,6 +11,7 @@ import io.github.takusan23.coneco.R
 import io.github.takusan23.coneco.data.AudioConfData
 import io.github.takusan23.coneco.data.VideoConfData
 import io.github.takusan23.coneco.tool.SerializationTool
+import io.github.takusan23.coneco.tool.WorkManagerTool
 import io.github.takusan23.conecocore.ConecoCore
 import io.github.takusan23.conecocore.data.ConecoRequestUriData
 import io.github.takusan23.conecocore.data.VideoMergeStatus
@@ -104,7 +105,7 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
             // WorkManagerに進捗を共有する機能がある
             setProgress(workDataOf(WORK_STATUS_KEY to it.name))
             // 通知のプログレスバーも更新。APIがFloat返すのでIntにする
-            setForeground(createForegroundInfo(10, (VideoMergeStatus.progress(it) * 10).toInt()))
+            setForeground(createForegroundInfo(it))
         }.launchIn(scope)
         // 結合開始
         val mergeTime = conecoCore!!.merge()
@@ -115,13 +116,9 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
     /**
      * Foreground Service で実行させるための情報
      *
-     * @param maxStep プログレスバー最大値
-     * @param progress プログレスバーの位置
+     * @param status 進捗状態、なければnull
      * */
-    private fun createForegroundInfo(
-        maxStep: Int = 0,
-        progress: Int = 0,
-    ): ForegroundInfo {
+    private fun createForegroundInfo(status: VideoMergeStatus? = null): ForegroundInfo {
         val channel = NotificationChannelCompat.Builder(NOTIFICATION_CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW).apply {
             setName(appContext.getString(R.string.notification_video_merge_channel_name))
         }.build()
@@ -132,10 +129,11 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
         val notification = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID).apply {
             setContentTitle(appContext.getString(R.string.notification_video_merge_title))
             setContentText(appContext.getString(R.string.notification_video_merge_subtitle))
-            setSmallIcon(R.drawable.ic_outline_videocam_24)
-            // プログレスバー
-            if (progress > 0.0f) {
-                setProgress(maxStep, progress, false)
+            setSmallIcon(R.drawable.coneco_android)
+            // 進捗状態があれば
+            if (status != null) {
+                setProgress(10, (VideoMergeStatus.progress(status) * 10).toInt(), false)
+                setContentText(WorkManagerTool.workStatusToLocalize(appContext, status))
             }
             // 再表示用PendingIntent
             setContentIntent(MainActivity.createMainActivityPendingIntent(applicationContext))

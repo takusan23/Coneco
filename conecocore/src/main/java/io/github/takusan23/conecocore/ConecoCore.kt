@@ -7,8 +7,11 @@ import io.github.takusan23.conecocore.merge.VideoDataMerge
 import io.github.takusan23.conecocore.merge.VideoDataMergeAbstract
 import io.github.takusan23.conecocore.merge.VideoDataOpenGlMerge
 import io.github.takusan23.conecocore.tool.MergedDataMuxer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 
 /**
  * 複数の動画を繋げて一つにする
@@ -94,15 +97,17 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
      *
      * @return 処理が終わるまでの時間（ミリ秒）
      * */
-    suspend fun merge(): Long {
+    suspend fun merge(): Long = withContext(Dispatchers.Default) {
         // 時間を測ろう！
         val startMs = System.currentTimeMillis()
 
         // それぞれのファイルの結合
+        val videoMergeTask = async { videoDataMerge?.merge() }
+        val audioMergeTask = async { audioDataMerge?.merge() }
         _status.value = VideoMergeStatus.VIDEO_MERGE
-        videoDataMerge?.merge()
+        videoMergeTask.await()
         _status.value = VideoMergeStatus.AUDIO_MERGE
-        audioDataMerge?.merge()
+        audioMergeTask.await()
         // 合わせる
         _status.value = VideoMergeStatus.CONCAT
         MergedDataMuxer.mixed(requestData.mergeResultFile, listOf(requestData.tempVideoFile, requestData.tempAudioFile))
@@ -113,7 +118,7 @@ class ConecoCore(private val requestData: ConecoRequestInterface) {
         _status.value = VideoMergeStatus.FINISH
 
         // 時間
-        return System.currentTimeMillis() - startMs
+        return@withContext System.currentTimeMillis() - startMs
     }
 
     /**

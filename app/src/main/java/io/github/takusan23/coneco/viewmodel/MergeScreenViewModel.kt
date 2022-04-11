@@ -144,7 +144,7 @@ class MergeScreenViewModel(application: Application) : AndroidViewModel(applicat
             .addTag(VideoMergeWork.WORKER_TAG)
             .setInputData(workDataOf(
                 // 結合する動画のURI配列。空っぽならnull
-                VideoMergeWork.MERGE_URI_LIST_KEY to selectedVideoList.value.ifEmpty { null },
+                VideoMergeWork.MERGE_URI_LIST_KEY to selectedVideoList.value.map { it.uri.toString() }.toTypedArray().ifEmpty { null },
                 // 結合する動画のHLSプレイリストURL。ない場合は URI配列 のほうが使われる
                 VideoMergeWork.MERGE_HLS_PLAYLIST_URL_KEY to hlsPlaylistUrl.value,
                 // 保存先

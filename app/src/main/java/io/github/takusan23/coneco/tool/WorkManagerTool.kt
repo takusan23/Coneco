@@ -72,7 +72,8 @@ object WorkManagerTool {
     fun collectMergeTotalTime(context: Context, owner: LifecycleOwner): StateFlow<Long> {
         val state = MutableStateFlow(-1L)
         WorkManager.getInstance(context).getWorkInfosByTagLiveData(VideoMergeWork.WORKER_TAG).observe(owner) { list ->
-            state.value = list.firstOrNull { it.state.isFinished }?.outputData?.getLong(VideoMergeWork.WORK_TOTAL_MERGE_TIME, -1L) ?: -1L
+            // 最後に成功したやつの時間をもらう
+            state.value = list.maxByOrNull { it.outputData.getLong(VideoMergeWork.WORK_FINISH_DATE, -1) }?.outputData?.getLong(VideoMergeWork.WORK_TOTAL_MERGE_TIME, -1L) ?: -1L
         }
         return state
     }

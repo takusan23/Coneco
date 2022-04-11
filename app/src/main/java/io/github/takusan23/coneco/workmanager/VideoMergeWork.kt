@@ -43,7 +43,10 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
             // 結合を行う
             val mergeTime = withContext(Dispatchers.Default) { startMerge() }
             // 結合にかかった時間を渡して成功
-            return Result.success(workDataOf(WORK_TOTAL_MERGE_TIME to mergeTime))
+            return Result.success(workDataOf(
+                WORK_TOTAL_MERGE_TIME to mergeTime,
+                WORK_FINISH_DATE to System.currentTimeMillis()
+            ))
         } catch (e: Exception) {
             e.printStackTrace()
             // WorkManagerがキャンセルになると、CancellationException が投げられるのでキャッチする
@@ -177,6 +180,9 @@ class VideoMergeWork(private val appContext: Context, params: WorkerParameters) 
 
         /** 結合にかかった時間 */
         const val WORK_TOTAL_MERGE_TIME = "io.github.takusan23.coneco.workmanager.VideoMergeWork.WORK_TOTAL_MERGE_TIME"
+
+        /** 終了時刻 */
+        const val WORK_FINISH_DATE = "io.github.takusan23.coneco.workmanager.VideoMergeWork.WORK_FINISH_DATE"
 
         /** 一時保存先 */
         const val TEMP_FILE_FOLDER = "temp_file_folder"

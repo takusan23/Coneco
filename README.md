@@ -23,6 +23,15 @@ sonatypeStagingProfileId=0000...
 ```
 
 - コマンドを実行する
+    - conecocore / conecohls
 ```
 gradle :conecocore:publishToSonatype
 ```
+
+- Sonatype OSSRH nexus repository manager へログイン
+    - Staging repository を開く
+    - 該当の項目を押す
+    - リリースするなら Close 、辞めるなら Drop を押す
+    - Close を押したあと暫く待つと Release が押せるようになる
+        - 気が変わったら Drop 出来る。
+        - Release 後は戻せない。

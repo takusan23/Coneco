@@ -1,4 +1,4 @@
-# concatcore
+# conecocore
 
 複数の動画をひとつに繋げるライブラリ。
 モジュールなので、`app`がこのライブラリを参照して使ってます。また、MavenCentralから参照可能です。
@@ -53,7 +53,7 @@ val requestData = ConecoRequestUriData(
 
 音声と映像のエンコーダー設定が必要です。
 
-```
+```kotlin
 val conecoCore = ConecoCore(requestData).apply {
     configureAudioFormat(
         bitRate = 192_000 // 音声ビットレート

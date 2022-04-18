@@ -7,7 +7,11 @@
 
 ### わたし向け MavenCentralへデプロイ
 
-- local.propertiesにログイン情報を記載する
+- バージョンをインクリメントする
+    - `val libraryVersion = "1.0.0"`
+        - この部分を+1する
+
+- (初回時のみ) local.propertiesにログイン情報を記載する
 ```properties
 # 鍵IDの最後8桁
 signing.keyId=xxxxxx

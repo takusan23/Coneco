@@ -1,13 +1,15 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    // ライブラリに同梱するドキュメント生成器
+    id("org.jetbrains.dokka").version("1.6.10")
     // ライブラリ作成に必要
     `maven-publish`
     signing
 }
 
 // ライブラリバージョン
-val libraryVersion = "1.0.0"
+val libraryVersion = "1.0.1"
 // ライブラリ名
 val libraryName = "conecocore"
 // ライブラリの説明
@@ -51,14 +53,32 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
+tasks.dokkaHtml.configure {
+    outputDirectory.set(buildDir.resolve("javadoc"))
+}
+
 val androidSourcesJar = tasks.register<Jar>("androidSourcesJar") {
     archiveClassifier.set("sources")
     from("android.sourceSets.main.java.srcDirs")
     from("android.sourceSets.main.kotlin.srcDirs")
 }
 
+val javadocJar = tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml.get().outputDirectory)
+}
+
 artifacts {
     archives(androidSourcesJar)
+    archives(javadocJar)
+}
+
+tasks.dokkaHtml.configure {
+    dokkaSourceSets {
+        named("main") {
+            noAndroidSdkLink.set(false)
+        }
+    }
 }
 
 signing {
@@ -84,6 +104,7 @@ afterEvaluate {
                     from(components["java"])
                 }
                 artifact(androidSourcesJar)
+                artifact(javadocJar)
                 pom {
                     // ライブラリ情報
                     name.set(artifactId)
